@@ -8,8 +8,11 @@ import java.util.Map;
 import java.util.UUID;
 import com.mojang.authlib.GameProfile;
 
+import ba.minecraft.uniquecommands.common.core.data.PlayerDeadData;
 import ba.minecraft.uniquecommands.common.core.data.PlayerSeenData;
 import ba.minecraft.uniquecommands.common.core.data.PlayersSeenSavedData;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -44,6 +47,7 @@ public final class PlayerManager {
 			return;
 		}
 
+
 		// Cast level to ServerLevel (since it is not client side.
 		ServerLevel serverLevel = (ServerLevel)level;
 
@@ -71,6 +75,33 @@ public final class PlayerManager {
 		// Save data to server.
 		storage.set(SEENS_KEY, savedData);
 	}
+	
+	public static void setDead(Player player) {
+		
+		// Get reference to a level where player was before logging out.
+		Level level = player.getLevel();
+				
+		// IF: Code is executing on client side.
+		if (level.isClientSide()) {
+			return;
+		}
+		
+		
+		// Cast level to ServerLevel (since it is not client side.
+		ServerLevel serverLevel = (ServerLevel)level;
+
+		// Get UUID of player.
+		UUID playerId = player.getUUID();
+		
+		// Get resource key for the dimension of level.
+		ResourceKey<Level> dimension = level.dimension();
+		
+		// Get location of dimension resource.
+		ResourceLocation resLoc = dimension.location();
+		
+		// Create saved data.
+		PlayerDeadData playerData = new PlayerDeadData(playerId);
+	}			
 	
 	public static List<PlayerSeenData> getSeen(ServerLevel serverLevel, String playerName) {
 		
