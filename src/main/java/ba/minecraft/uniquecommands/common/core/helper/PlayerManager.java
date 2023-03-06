@@ -5,12 +5,15 @@ import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import com.mojang.authlib.GameProfile;
 
 import ba.minecraft.uniquecommands.common.core.data.PlayerDeadData;
 import ba.minecraft.uniquecommands.common.core.data.PlayerSeenData;
+import ba.minecraft.uniquecommands.common.core.data.PlayersDeadSavedData;
 import ba.minecraft.uniquecommands.common.core.data.PlayersSeenSavedData;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -21,6 +24,8 @@ import net.minecraft.world.level.storage.DimensionDataStorage;
 public final class PlayerManager {
 
 	private static final String SEENS_KEY = "seens";
+	
+	private static final String DEATHS_KEY = "deaths";
 
 	private static final Map<UUID, Long> teleports = 
 			new HashMap<UUID, Long>();
@@ -67,7 +72,7 @@ public final class PlayerManager {
 		DimensionDataStorage storage = serverLevel.getDataStorage();
 
 		// Load players saved data.
-		PlayersSeenSavedData savedData = tryLoadPlayersSavedData(storage);
+		PlayersSeenSavedData savedData = tryLoadPlayersSeenData(storage);
 
 		// Insert or update data for specific player.
 		savedData.upsertPlayerData(playerData);
@@ -86,7 +91,6 @@ public final class PlayerManager {
 			return;
 		}
 		
-		
 		// Cast level to ServerLevel (since it is not client side.
 		ServerLevel serverLevel = (ServerLevel)level;
 
@@ -99,8 +103,30 @@ public final class PlayerManager {
 		// Get location of dimension resource.
 		ResourceLocation resLoc = dimension.location();
 		
+		String dimName = resLoc.toString();
+		
+		BlockPos playerPos = player.blockPosition();
+		
+		int posX = playerPos.getX();
+		
+		int posY = playerPos.getY();
+		
+		int posZ = playerPos.getZ();
+		
 		// Create saved data.
-		PlayerDeadData playerData = new PlayerDeadData(playerId);
+		PlayerDeadData playerData = new PlayerDeadData(playerId,dimName,posX,posY,posZ);
+		
+		// Get reference to server persistent data.
+		DimensionDataStorage storage = serverLevel.getDataStorage();
+
+				// Load players saved data.
+		PlayersDeadSavedData savedData = tryLoadPlayersDeadData(storage);
+
+		// Insert or update data for specific player.
+		savedData.upsertPlayerData(playerData);
+
+		// Save data to server.
+		storage.set(DEATHS_KEY, savedData);
 	}			
 	
 	public static List<PlayerSeenData> getSeen(ServerLevel serverLevel, String playerName) {
@@ -109,7 +135,7 @@ public final class PlayerManager {
 		DimensionDataStorage storage = serverLevel.getDataStorage();
 		
 		// Load players saved data.
-		PlayersSeenSavedData savedData = tryLoadPlayersSavedData(storage);
+		PlayersSeenSavedData savedData = tryLoadPlayersSeenData(storage);
 		
 		// Get data for all players.
 		List<PlayerSeenData> playersData = savedData.getPlayersData();
@@ -120,7 +146,26 @@ public final class PlayerManager {
 					      .toList();
 	}
 	
-	private static PlayersSeenSavedData tryLoadPlayersSavedData(DimensionDataStorage storage) {
+	public static Optional<PlayerDeadData> getDead(ServerLevel serverLevel, UUID playerId) {
+		
+		// Get reference to level storage.
+		DimensionDataStorage storage = serverLevel.getDataStorage();
+		
+		// Load players saved data.
+		PlayersDeadSavedData savedData = tryLoadPlayersDeadData(storage);
+		
+		// Get data for all players.
+		List<PlayerDeadData> playersData = savedData.getPlayersData();
+		
+		// Return only players that match the player name.
+		Optional<PlayerDeadData> searchResult =  playersData.stream()
+					      .filter(p -> p.getPlayerId().equals(playerId))
+					      .findFirst();
+		
+		return searchResult;
+	}
+	
+	private static PlayersSeenSavedData tryLoadPlayersSeenData(DimensionDataStorage storage) {
 
 		// Load saved data based on the key.
 		PlayersSeenSavedData savedData = storage.get(PlayersSeenSavedData::load, SEENS_KEY);
@@ -128,6 +173,19 @@ public final class PlayerManager {
 		// IF: Data was never saved before.
 		if(savedData == null) {
 			savedData = PlayersSeenSavedData.create();
+		}
+		
+		return savedData;
+	}
+	
+	private static PlayersDeadSavedData tryLoadPlayersDeadData(DimensionDataStorage storage) {
+
+		// Load saved data based on the key.
+		PlayersDeadSavedData savedData = storage.get(PlayersDeadSavedData::load, DEATHS_KEY);
+		
+		// IF: Data was never saved before.
+		if(savedData == null) {
+			savedData = PlayersDeadSavedData.create();
 		}
 		
 		return savedData;

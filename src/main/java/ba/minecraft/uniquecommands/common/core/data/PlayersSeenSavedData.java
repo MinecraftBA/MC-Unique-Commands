@@ -13,10 +13,10 @@ public final class PlayersSeenSavedData extends SavedData {
 
 	private static final String KEY = "Players";
 	
-	private final List<PlayerSeenData> playersData;
+	private final List<PlayerSeenData> playersDataTable;
 	
 	public PlayersSeenSavedData(List<PlayerSeenData> playersData) {
-		this.playersData = playersData;
+		this.playersDataTable = playersData;
 	}
 	
 	public static PlayersSeenSavedData create() {
@@ -30,7 +30,7 @@ public final class PlayersSeenSavedData extends SavedData {
 		ListTag listTag = new ListTag();
 		
 		// Iterate through all player data.
-		for(PlayerSeenData playerData : this.playersData) {
+		for(PlayerSeenData playerData : this.playersDataTable) {
 			
 			// Serialize player data to NBT.
 			CompoundTag playerTag = playerData.serialize();
@@ -69,15 +69,15 @@ public final class PlayersSeenSavedData extends SavedData {
 	}
 	
 	public List<PlayerSeenData> getPlayersData(){
-		return this.playersData;
+		return this.playersDataTable;
 	}
-
+	
 	public void upsertPlayerData(PlayerSeenData playerData) {
 
 		// Find existing log of player seen data based on username and UUID.
-		Optional<PlayerSeenData> searchResult = this.playersData
+		Optional<PlayerSeenData> searchResult = this.playersDataTable
 				.stream()
-				.filter($p -> $p.getPlayerName().contentEquals(playerData.getPlayerName()) && $p.getPlayerId().equals(playerData.getPlayerId()))
+				.filter($playerDataRow -> $playerDataRow.getPlayerName().contentEquals(playerData.getPlayerName()) && $playerDataRow.getPlayerId().equals(playerData.getPlayerId()))
 				.findFirst();
 
 		// IF: Log exists.
@@ -92,7 +92,7 @@ public final class PlayersSeenSavedData extends SavedData {
 		} else {
 			
 			// Add new log.
-			this.playersData.add(playerData);
+			this.playersDataTable.add(playerData);
 		}
 		
 		// Set data to be dirty as changes have been made.

@@ -13,11 +13,11 @@ public final class PlayerDeadData {
 	private final static String POS_Y_KEY = "PosY";
 	private final static String POS_Z_KEY= "PosZ";
 	
-	private final UUID playerId;
-	private final String dimension;
-	private final int posX;
-	private final int posY;
-	private final int posZ;
+	private UUID playerId;
+	private String dimension;
+	private int posX;
+	private int posY;
+	private int posZ;
 	
 	public PlayerDeadData( UUID playerId, String dimension,int posX,int posY,int posZ) {
 		this.playerId = playerId;
@@ -65,6 +65,16 @@ public final class PlayerDeadData {
 
 	public String getDimension() {
 		return dimension;
+	}
+	
+	public void setDimension(String dimension) {
+		this.dimension = dimension;
+	}
+	
+	public void setBlockPos(BlockPos blockPos) {
+		this.posX = blockPos.getX();
+		this.posY = blockPos.getY();
+		this.posZ = blockPos.getZ();
 	}
 	
 	public BlockPos getBlockPos() {
