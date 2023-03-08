@@ -54,7 +54,7 @@ public final class GravebackCommand {
 		float yaw = player.getYRot();
 		float pitch = player.getXRot();
 		
-		// 
+		
 		Optional<PlayerDeadData> deadData = PlayerManager.getDead(serverLevel, playerId);
 		
 		// IF: Log exists.

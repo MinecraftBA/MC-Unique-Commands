@@ -12,8 +12,8 @@ public final class LivingDeathEventHandler {
 	@SubscribeEvent()
 	public static void onLivingDeath(final LivingDeathEvent entity) {
 		
-
-
+		
+		
 	}
 	
 }

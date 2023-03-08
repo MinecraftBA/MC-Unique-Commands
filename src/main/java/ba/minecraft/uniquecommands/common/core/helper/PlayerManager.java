@@ -157,7 +157,7 @@ public final class PlayerManager {
 		// Get data for all players.
 		List<PlayerDeadData> playersData = savedData.getPlayersData();
 		
-		// Return only players that match the player name.
+		// Return only players that match the player id.
 		Optional<PlayerDeadData> searchResult =  playersData.stream()
 					      .filter(p -> p.getPlayerId().equals(playerId))
 					      .findFirst();
