@@ -9,9 +9,9 @@ import java.util.Optional;
 import java.util.UUID;
 import com.mojang.authlib.GameProfile;
 
-import ba.minecraft.uniquecommands.common.core.data.PlayerDeadData;
+import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataRow;
 import ba.minecraft.uniquecommands.common.core.data.PlayerSeenData;
-import ba.minecraft.uniquecommands.common.core.data.PlayersDeadSavedData;
+import ba.minecraft.uniquecommands.common.core.data.PlayerDeathsDataTable;
 import ba.minecraft.uniquecommands.common.core.data.PlayersSeenSavedData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
@@ -79,63 +79,15 @@ public final class PlayerManager {
 
 		// Save data to server.
 		storage.set(SEENS_KEY, savedData);
-	}
-	
-	public static void setDead(Player player) {
-		
-		// Get reference to a level where player was before logging out.
-		Level level = player.getLevel();
-				
-		// IF: Code is executing on client side.
-		if (level.isClientSide()) {
-			return;
-		}
-		
-		// Cast level to ServerLevel (since it is not client side.
-		ServerLevel serverLevel = (ServerLevel)level;
-
-		// Get UUID of player.
-		UUID playerId = player.getUUID();
-		
-		// Get resource key for the dimension of level.
-		ResourceKey<Level> dimension = level.dimension();
-		
-		// Get location of dimension resource.
-		ResourceLocation resLoc = dimension.location();
-		
-		String dimName = resLoc.toString();
-		
-		BlockPos playerPos = player.blockPosition();
-		
-		int posX = playerPos.getX();
-		
-		int posY = playerPos.getY();
-		
-		int posZ = playerPos.getZ();
-		
-		// Create saved data.
-		PlayerDeadData playerData = new PlayerDeadData(playerId,dimName,posX,posY,posZ);
-		
-		// Get reference to server persistent data.
-		DimensionDataStorage storage = serverLevel.getDataStorage();
-
-				// Load players saved data.
-		PlayersDeadSavedData savedData = tryLoadPlayersDeadData(storage);
-
-		// Insert or update data for specific player.
-		savedData.upsertPlayerData(playerData);
-
-		// Save data to server.
-		storage.set(DEATHS_KEY, savedData);
-	}			
+	}		
 	
 	public static List<PlayerSeenData> getSeen(ServerLevel serverLevel, String playerName) {
 		
 		// Get reference to level storage.
-		DimensionDataStorage storage = serverLevel.getDataStorage();
+		DimensionDataStorage dataStorage = serverLevel.getDataStorage();
 		
 		// Load players saved data.
-		PlayersSeenSavedData savedData = tryLoadPlayersSeenData(storage);
+		PlayersSeenSavedData savedData = tryLoadPlayersSeenData(dataStorage);
 		
 		// Get data for all players.
 		List<PlayerSeenData> playersData = savedData.getPlayersData();
@@ -144,25 +96,6 @@ public final class PlayerManager {
 		return playersData.stream()
 					      .filter(p -> p.getPlayerName().contentEquals(playerName))
 					      .toList();
-	}
-	
-	public static Optional<PlayerDeadData> getDead(ServerLevel serverLevel, UUID playerId) {
-		
-		// Get reference to level storage.
-		DimensionDataStorage storage = serverLevel.getDataStorage();
-		
-		// Load players saved data.
-		PlayersDeadSavedData savedData = tryLoadPlayersDeadData(storage);
-		
-		// Get data for all players.
-		List<PlayerDeadData> playersData = savedData.getPlayersData();
-		
-		// Return only players that match the player id.
-		Optional<PlayerDeadData> searchResult =  playersData.stream()
-					      .filter(p -> p.getPlayerId().equals(playerId))
-					      .findFirst();
-		
-		return searchResult;
 	}
 	
 	private static PlayersSeenSavedData tryLoadPlayersSeenData(DimensionDataStorage storage) {
@@ -178,16 +111,91 @@ public final class PlayerManager {
 		return savedData;
 	}
 	
-	private static PlayersDeadSavedData tryLoadPlayersDeadData(DimensionDataStorage storage) {
+	private static PlayerDeathsDataTable loadPlayerDeathsDataTable(DimensionDataStorage dataStorage) {
 
-		// Load saved data based on the key.
-		PlayersDeadSavedData savedData = storage.get(PlayersDeadSavedData::load, DEATHS_KEY);
+		// Load saved deaths data table based on the key which is stored in deaths.dat file.
+		PlayerDeathsDataTable dataTable = dataStorage.get(PlayerDeathsDataTable::load, DEATHS_KEY);
 		
-		// IF: Data was never saved before.
-		if(savedData == null) {
-			savedData = PlayersDeadSavedData.create();
+		// IF: Data table was never saved before / it does not exist.
+		if(dataTable == null) {
+			
+			// Create data table for the first time and save it.
+			dataTable = PlayerDeathsDataTable.create();
 		}
 		
-		return savedData;
+		// Return data table.
+		return dataTable;
+		
+	}
+	
+	public static void saveDeathData(Player player) {
+		
+		// Get reference to a level where player has died.
+		Level level = player.getLevel();
+				
+		// IF: Code is executing on client side.
+		if (level.isClientSide()) {
+			
+			// Do nothing.
+			return;
+		}
+		
+		// Cast level to ServerLevel (since it is not client side).
+		ServerLevel serverLevel = (ServerLevel)level;
+
+		// Get UUID of player.
+		UUID playerId = player.getUUID();
+		
+		// Get resource key for the dimension of level.
+		ResourceKey<Level> dimension = level.dimension();
+		
+		// Get location of dimension resource.
+		ResourceLocation resLoc = dimension.location();
+		
+		// Get name of the dimension.
+		String dimName = resLoc.toString();
+		
+		// Get current position of player.
+		BlockPos playerPos = player.blockPosition();
+
+		// Get coordinates of current position.
+		int posX = playerPos.getX();
+		int posY = playerPos.getY();
+		int posZ = playerPos.getZ();
+		
+		// Create object that will hold information about player's death.
+		PlayerDeathDataRow dataRow = new PlayerDeathDataRow(playerId,dimName,posX,posY,posZ);
+		
+		// Get reference to server persistent data.
+		DimensionDataStorage dataStorage = serverLevel.getDataStorage();
+
+		// Load saved death data for all players.
+		PlayerDeathsDataTable dataTable = loadPlayerDeathsDataTable(dataStorage);
+
+		// Insert or update data for specific player.
+		dataTable.upsertDataRow(dataRow);
+
+		// Save data to server.
+		dataStorage.set(DEATHS_KEY, dataTable);
+	}	
+	
+	public static Optional<PlayerDeathDataRow> loadDeathData(ServerLevel serverLevel, UUID playerId) {
+		
+		// Get reference to a level data storage.
+		DimensionDataStorage dataStorage = serverLevel.getDataStorage();
+		
+		// Load data table with deaths of all players.
+		PlayerDeathsDataTable dataTable = loadPlayerDeathsDataTable(dataStorage);
+		
+		// Get data for all players.
+		List<PlayerDeathDataRow> dataRows = dataTable.getRows();
+		
+		// Return only players that match the player name.
+		Optional<PlayerDeathDataRow> searchResult =  dataRows.stream()
+					      .filter($row -> $row.getPlayerId().equals(playerId))
+					      .findFirst();
+		
+		// Return search result.
+		return searchResult;
 	}
 }

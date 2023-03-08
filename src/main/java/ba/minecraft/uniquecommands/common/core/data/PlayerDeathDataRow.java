@@ -5,7 +5,7 @@ import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 
-public final class PlayerDeadData {
+public final class PlayerDeathDataRow {
 	
 	private final static String UUID_KEY = "UUID";
 	private final static String DIM_KEY = "Dim";
@@ -19,7 +19,7 @@ public final class PlayerDeadData {
 	private int posY;
 	private int posZ;
 	
-	public PlayerDeadData( UUID playerId, String dimension,int posX,int posY,int posZ) {
+	public PlayerDeathDataRow(UUID playerId, String dimension, int posX, int posY, int posZ) {
 		this.playerId = playerId;
 		this.dimension = dimension;
 		this.posX = posX;
@@ -36,10 +36,11 @@ public final class PlayerDeadData {
 		compoundTag.putInt(POS_X_KEY, posX);
 		compoundTag.putInt(POS_Y_KEY, posY);
 		compoundTag.putInt(POS_Z_KEY, posZ);
+		
 		return compoundTag;
 	}
 	
-	public static PlayerDeadData deserialize(CompoundTag compoundTag) {
+	public static PlayerDeathDataRow deserialize(CompoundTag compoundTag) {
 
 		// Get player UUID.
 		UUID playerId = compoundTag.getUUID(UUID_KEY);
@@ -54,7 +55,7 @@ public final class PlayerDeadData {
 		int posZ = compoundTag.getInt(POS_Z_KEY);
 		
 		// Create new instance of saved data.
-		PlayerDeadData savedData = new PlayerDeadData( playerId, dimension, posX, posY, posZ);
+		PlayerDeathDataRow savedData = new PlayerDeathDataRow( playerId, dimension, posX, posY, posZ);
 		
 		return savedData;
 	}
@@ -63,12 +64,12 @@ public final class PlayerDeadData {
 		return playerId;
 	}
 
-	public String getDimension() {
-		return dimension;
-	}
-	
 	public void setDimension(String dimension) {
 		this.dimension = dimension;
+	}
+
+	public String getDimension() {
+		return dimension;
 	}
 	
 	public void setBlockPos(BlockPos blockPos) {

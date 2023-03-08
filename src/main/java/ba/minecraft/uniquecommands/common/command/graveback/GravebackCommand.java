@@ -7,7 +7,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
-import ba.minecraft.uniquecommands.common.core.data.PlayerDeadData;
+import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataRow;
 import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -38,30 +38,26 @@ public final class GravebackCommand {
 			
 	}
 	
-	
 	private static int graveback(CommandSourceStack source) throws CommandSyntaxException {
 
 		// Get reference to player that has typed the command.
 		ServerPlayer player = source.getPlayerOrException();
 		
-		// Get level on which is player
+		// Get level on which is player currently.
 		ServerLevel serverLevel = player.getLevel();
 		
-		// Get player UUID 
+		// Get player UUID.
 		UUID playerId = player.getUUID();
 		
-		// Get players rotation
+		// Get rotation of player.
 		float yaw = player.getYRot();
 		float pitch = player.getXRot();
 		
+		Optional<PlayerDeathDataRow> optionalDataRow = PlayerManager.loadDeathData(serverLevel, playerId);
 		
-		Optional<PlayerDeadData> deadData = PlayerManager.getDead(serverLevel, playerId);
-		
-		// IF: Log exists.
-		if(deadData.isPresent()) {
+		if(optionalDataRow.isPresent()) {
 			
-			// Extract the log.
-			PlayerDeadData existing = deadData.get();
+			PlayerDeathDataRow dataRow = optionalDataRow.get();
 
 			existing.setBlockPos(playerData.getBlockPos());
 			
