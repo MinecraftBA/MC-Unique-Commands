@@ -187,10 +187,10 @@ public final class PlayerManager {
 		// Load data table with deaths of all players.
 		PlayerDeathsDataTable dataTable = loadPlayerDeathsDataTable(dataStorage);
 		
-		// Get data for all players.
+		// Get data rows for all players.
 		List<PlayerDeathDataRow> dataRows = dataTable.getRows();
 		
-		// Return only players that match the player name.
+		// Try to find player by his ID.
 		Optional<PlayerDeathDataRow> searchResult =  dataRows.stream()
 					      .filter($row -> $row.getPlayerId().equals(playerId))
 					      .findFirst();

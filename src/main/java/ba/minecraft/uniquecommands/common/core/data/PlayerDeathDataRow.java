@@ -45,7 +45,7 @@ public final class PlayerDeathDataRow {
 		// Get player UUID.
 		UUID playerId = compoundTag.getUUID(UUID_KEY);
 
-		// Get player name.
+		// Get dimension name.
 		String dimension = compoundTag.getString(DIM_KEY);
 		
 		int posX = compoundTag.getInt(POS_X_KEY);
@@ -55,9 +55,9 @@ public final class PlayerDeathDataRow {
 		int posZ = compoundTag.getInt(POS_Z_KEY);
 		
 		// Create new instance of saved data.
-		PlayerDeathDataRow savedData = new PlayerDeathDataRow( playerId, dimension, posX, posY, posZ);
+		PlayerDeathDataRow dataRow = new PlayerDeathDataRow( playerId, dimension, posX, posY, posZ);
 		
-		return savedData;
+		return dataRow;
 	}
 
 	public UUID getPlayerId() {

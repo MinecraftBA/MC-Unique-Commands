@@ -55,10 +55,14 @@ public final class GravebackCommand {
 		
 		Optional<PlayerDeathDataRow> optionalDataRow = PlayerManager.loadDeathData(serverLevel, playerId);
 		
+		
+		// IF: Data row was found.
 		if(optionalDataRow.isPresent()) {
 			
+			// Gets data row.
 			PlayerDeathDataRow dataRow = optionalDataRow.get();
-
+			
+			
 			existing.setBlockPos(playerData.getBlockPos());
 			
 			// Teleport player to coordinates.
