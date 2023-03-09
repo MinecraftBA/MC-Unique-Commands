@@ -78,6 +78,18 @@ public final class PlayerDeathDataRow {
 		this.posZ = blockPos.getZ();
 	}
 	
+	public int getPosX() {
+		return posX;
+	}
+	
+	public int getPosY() {
+		return posY;
+	}
+	
+	public int getPosZ() {
+		return posZ;
+	}
+	
 	public BlockPos getBlockPos() {
 		return new BlockPos(posX,posY,posZ);
 	}

@@ -53,6 +53,7 @@ public final class GravebackCommand {
 		float yaw = player.getYRot();
 		float pitch = player.getXRot();
 		
+		
 		Optional<PlayerDeathDataRow> optionalDataRow = PlayerManager.loadDeathData(serverLevel, playerId);
 		
 		
@@ -61,78 +62,21 @@ public final class GravebackCommand {
 			
 			// Gets data row.
 			PlayerDeathDataRow dataRow = optionalDataRow.get();
-			
-			
-			existing.setBlockPos(playerData.getBlockPos());
+				
+			int posX = dataRow.getPosX();	
+			int posY = dataRow.getPosY();
+			int posZ = dataRow.getPosZ();
 			
 			// Teleport player to coordinates.
 			player.teleportTo(serverLevel,posX,posY,posZ,yaw,pitch);
+			
+			return 1;
 		} else {
 			
-			// Add new log.
-			this.playersData.add(playerData);
-		}
-		
-		// Create key => experimentalmod:home
-		String key = UniqueCommandsMod.MODID + ":home:" + locName;
-		
-		// Retrieve coordinates by providing key to persistent data.
-		int[] coordinates = data.getIntArray(key + ":coords");
-		
-		// IF: Coordinates were not saved previously.
-		if (coordinates.length == 0) {
-			
-			// Create error message.
-			MutableComponent message = Component.translatable(
-				"command." + UniqueCommandsMod.MODID + ".home_return.failure"
-			);
-			
-			// Send error message.
-			source.sendFailure(message);
-
-			// Return error code.
 			return -1;
 		}
 		
-		// Extract coordinates from array.
-		int x = coordinates[0];
-		int y = coordinates[1];
-		int z = coordinates[2];
-		
-		// Get ID of resource location for dimension.
-		String resLocId = data.getString(key + ":dim");
-
-		// Create resource location.
-		ResourceLocation resLoc = new ResourceLocation(resLocId);
-		
-		// Get resource key for dimension.
-		ResourceKey<Level> resKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, resLoc);
-		
-		// Get reference to server where code is running.
-		MinecraftServer server = player.getServer();
-		
-		// Get reference to level that was saved with command.
-		ServerLevel level = server.getLevel(resKey);
-		
-		float yaw = player.getYRot();
-		float pitch = player.getXRot();
-		
-		// Teleport player to coordinates.
-		player.teleportTo(level, x, y, z, yaw, pitch);
-		
-		// Create success message.
-		MutableComponent message = Component.translatable(
-			"command."  + UniqueCommandsMod.MODID + ".home_return.success", locName, x, y, z
-		);
-		
-		// Send confirmation message.
-		source.sendSuccess(message, true);
-		
-		// Return success code.
-		return 1;
-		
+	
 	}
-	
-	
 	
 }
