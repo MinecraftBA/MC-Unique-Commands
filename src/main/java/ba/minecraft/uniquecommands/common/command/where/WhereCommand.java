@@ -83,18 +83,22 @@ public final class WhereCommand {
 		// Get name of dimension and clear minecraft: prefix.
 		String dimensionName = dimensionResLoc.toString().replace("minecraft:", "");
 		
-		// Create message to be displayed in console.		
-		MutableComponent message = Component.translatable(
-			"command." + UniqueCommandsMod.MODID + ".where.success", 
-			playerName, 
-			x,
-			y,
-			z,
-			dimensionName
-		);
-		
 		// Send message to console.
-		source.sendSuccess(message, true);
+		source.sendSuccess(() -> {
+
+			// Create message to be displayed in console.		
+			MutableComponent message = Component.translatable(
+				"command." + UniqueCommandsMod.MODID + ".where.success", 
+				playerName, 
+				x,
+				y,
+				z,
+				dimensionName
+			);
+			
+			return message;
+			
+		}, true);
 		
 		// Indicate success (1 = true).
 		return 1;

@@ -80,16 +80,21 @@ public final class SeenCommand {
 			// Format timestamp to human readable format.
 			String formattedTimestamp = timestamp.format(formatter);
 			
-			// Create message to be displayed in console.		
-			MutableComponent message = Component.translatable(
-				"command." + UniqueCommandsMod.MODID + ".seen.success", 
-				playerName, 
-				formattedTimestamp,
-				playerId
-			);
-			
 			// Send message to console.
-			source.sendSuccess(message, true);
+			source.sendSuccess(() -> {
+
+				// Create message to be displayed in console.		
+				MutableComponent message = Component.translatable(
+					"command." + UniqueCommandsMod.MODID + ".seen.success", 
+					playerName, 
+					formattedTimestamp,
+					playerId
+				);
+				
+
+				return message;
+				
+			}, true);
 		});
 		
 		// Indicate success (1 = true).

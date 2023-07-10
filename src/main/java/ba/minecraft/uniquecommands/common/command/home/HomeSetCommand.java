@@ -73,13 +73,17 @@ public final class HomeSetCommand {
 		// Save information about level.
 		data.putString(key + ":dim", resLoc.toString());
 		
-		// Create message to be displayed in console.		
-		MutableComponent message = Component.translatable(
-			"command." + UniqueCommandsMod.MODID + ".home_set.success", locName, x, y, z
-		);
-		
 		// Send message to console.
-		source.sendSuccess(message, true);
+		source.sendSuccess(() -> {
+
+			// Create message to be displayed in console.		
+			MutableComponent message = Component.translatable(
+				"command." + UniqueCommandsMod.MODID + ".home_set.success", locName, x, y, z
+			);
+			
+			return message;
+			
+		}, true);
 		
 		// Indicate success (1 = true).
 		return 1;

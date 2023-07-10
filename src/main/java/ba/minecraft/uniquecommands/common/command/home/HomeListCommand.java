@@ -56,18 +56,20 @@ public final class HomeListCommand {
 				int y = coordinates[1];
 				int z = coordinates[2];
 
-				String resLocId = data.getString(UniqueCommandsMod.MODID + ":home:" + locName + ":dim");
-				
-				// Remove minecraft: prefix from location for better displaying.
-				resLocId = resLocId.replace("minecraft:", "");
-				
-				// Create success message.
-				MutableComponent message = Component.translatable(
-					"command."  + UniqueCommandsMod.MODID + ".home_list.success", locName, x, y, z, resLocId
-				);
+				String resLocId = data.getString(UniqueCommandsMod.MODID + ":home:" + locName + ":dim")
+						.replace("minecraft:", ""); // Remove minecraft: prefix from location for better displaying.
 				
 				// Send confirmation message.
-				source.sendSuccess(message, true);
+				source.sendSuccess(() -> {
+
+					// Create success message.
+					MutableComponent message = Component.translatable(
+						"command."  + UniqueCommandsMod.MODID + ".home_list.success", locName, x, y, z, resLocId
+					);
+					
+					return message;
+					
+				}, true);
 				
 			}
 			

@@ -64,13 +64,17 @@ public final class HomeClearCommand {
 		// IF: At least 1 location has been removed.
 		if(removed) {
 
-			// Create success message.
-			MutableComponent message = Component.translatable(
-				"command."  + UniqueCommandsMod.MODID + ".home_clear.success"
-			);
-			
 			// Send confirmation message.
-			source.sendSuccess(message, true);
+			source.sendSuccess(() -> {
+
+				// Create success message.
+				MutableComponent message = Component.translatable(
+					"command."  + UniqueCommandsMod.MODID + ".home_clear.success"
+				);
+				
+				return message;
+				
+			}, true);
 			
 			return 1;
 			

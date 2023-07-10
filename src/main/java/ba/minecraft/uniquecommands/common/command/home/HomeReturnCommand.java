@@ -95,13 +95,17 @@ public final class HomeReturnCommand {
 		// Teleport player to coordinates.
 		player.teleportTo(level, x, y, z, yaw, pitch);
 		
-		// Create success message.
-		MutableComponent message = Component.translatable(
-			"command."  + UniqueCommandsMod.MODID + ".home_return.success", locName, x, y, z
-		);
-		
 		// Send confirmation message.
-		source.sendSuccess(message, true);
+		source.sendSuccess(() -> {
+
+			// Create success message.
+			MutableComponent message = Component.translatable(
+				"command."  + UniqueCommandsMod.MODID + ".home_return.success", locName, x, y, z
+			);
+			
+			return message;
+			
+		}, true);
 		
 		// Return success code.
 		return 1;
