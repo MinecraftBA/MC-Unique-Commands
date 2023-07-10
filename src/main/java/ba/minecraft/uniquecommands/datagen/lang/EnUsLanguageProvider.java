@@ -7,7 +7,7 @@ import net.minecraftforge.common.data.LanguageProvider;
 public final class EnUsLanguageProvider extends LanguageProvider {
 
 	public EnUsLanguageProvider(DataGenerator dataGen) {
-		super(dataGen, UniqueCommandsMod.MODID, "en_us");
+		super(dataGen.getPackOutput(), UniqueCommandsMod.MODID, "en_us");
 	}
 
 	private void addCommandSuccess(String commandName, String value) {

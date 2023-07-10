@@ -45,7 +45,7 @@ public final class PlayerManager {
 	public static void setSeen(Player player) {
 
 		// Get reference to a level where player was before logging out.
-		Level level = player.getLevel();
+		Level level = player.level();
 		
 		// IF: Code is executing on client side.
 		if (level.isClientSide()) {
@@ -131,7 +131,7 @@ public final class PlayerManager {
 	public static void saveDeathData(Player player) {
 		
 		// Get reference to a level where player has died.
-		Level level = player.getLevel();
+		Level level = player.level();
 				
 		// IF: Code is executing on client side.
 		if (level.isClientSide()) {

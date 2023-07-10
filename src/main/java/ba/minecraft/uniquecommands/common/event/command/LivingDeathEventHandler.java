@@ -18,7 +18,7 @@ public final class LivingDeathEventHandler {
 		
 		LivingEntity entity = event.getEntity();
 		
-		Level level = entity.getLevel();
+		Level level = entity.level();
 		
 		
 		if(level.isClientSide()) {

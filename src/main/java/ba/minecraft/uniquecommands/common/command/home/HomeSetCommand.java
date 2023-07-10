@@ -62,7 +62,7 @@ public final class HomeSetCommand {
 		data.putIntArray(key + ":coords", new int[] { x, y, z });
 		
 		// Get reference to level at which player is.
-		ServerLevel level = player.getLevel();
+		ServerLevel level = player.serverLevel();
 		
 		// Get resource key for the dimension of level.
 		ResourceKey<Level> dimension = level.dimension();

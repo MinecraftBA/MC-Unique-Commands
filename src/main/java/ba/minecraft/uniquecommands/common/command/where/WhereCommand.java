@@ -72,7 +72,7 @@ public final class WhereCommand {
 		int z = playerPos.getZ();
 
 		// Get reference to a level where player is located.
-		ServerLevel level = serverPlayer.getLevel();
+		ServerLevel level = serverPlayer.serverLevel();
 
 		// Get dimension in which level is located.
 		ResourceKey<Level> dimension = level.dimension();
