@@ -42,7 +42,7 @@ public final class HomeDeleteCommand {
 		// Get reference to player's persistent data.
 		CompoundTag data = player.getPersistentData();
 
-		// Create key => experimentalmod:home
+		// Create key => uniquecommands:home:...
 		String key = UniqueCommandsMod.MODID + ":home:" + locName;
 		
 		String coordsKey = key + ":coords";
