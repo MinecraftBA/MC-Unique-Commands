@@ -21,7 +21,7 @@ public final class CloneEventHandler {
 		Player original = event.getOriginal();
 
 		// Get reference to a level where player is.
-		Level level = original.getLevel();
+		Level level = original.level();
 		
 		// IF: Code is executing on client side.
 		if (level.isClientSide()) {

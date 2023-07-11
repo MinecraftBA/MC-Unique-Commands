@@ -42,7 +42,7 @@ public final class HomeDeleteCommand {
 		// Get reference to player's persistent data.
 		CompoundTag data = player.getPersistentData();
 
-		// Create key => experimentalmod:home
+		// Create key => uniquecommands:home:...
 		String key = UniqueCommandsMod.MODID + ":home:" + locName;
 		
 		String coordsKey = key + ":coords";
@@ -55,11 +55,15 @@ public final class HomeDeleteCommand {
 			data.remove(coordsKey);
 			data.remove(dimKey);
 			
-			MutableComponent message = Component.translatable(
-				"command."  + UniqueCommandsMod.MODID + ".home_delete.success", locName
-			);
-			
-			source.sendSuccess(message, true);
+			source.sendSuccess(() -> {
+
+				MutableComponent message = Component.translatable(
+					"command."  + UniqueCommandsMod.MODID + ".home_delete.success", locName
+				);
+
+				return message;
+				
+			}, true);
 			
 			return 1;
 		} else {

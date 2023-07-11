@@ -1,6 +1,7 @@
 package ba.minecraft.uniquecommands.common.event.command;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
+import ba.minecraft.uniquecommands.common.command.graveback.GravebackCommand;
 import ba.minecraft.uniquecommands.common.command.home.HomeClearCommand;
 import ba.minecraft.uniquecommands.common.command.home.HomeDeleteCommand;
 import ba.minecraft.uniquecommands.common.command.home.HomeListCommand;
@@ -27,6 +28,7 @@ public final class RegisterCommandsEventHandler {
 		
 		SeenCommand.register(event.getDispatcher());
 		WhereCommand.register(event.getDispatcher());
+		GravebackCommand.register(event.getDispatcher());
 		
 	}
 	

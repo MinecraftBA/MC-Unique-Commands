@@ -9,18 +9,18 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.saveddata.SavedData;
 
-public final class PlayersSeenSavedData extends SavedData {
+public final class PlayerDeathsDataTable extends SavedData {
 
 	private static final String KEY = "Players";
 	
-	private final List<PlayerSeenData> playersDataTable;
+	private final List<PlayerDeathDataRow> rows;
 	
-	public PlayersSeenSavedData(List<PlayerSeenData> playersData) {
-		this.playersDataTable = playersData;
+	public PlayerDeathsDataTable(List<PlayerDeathDataRow> playersData) {
+		this.rows = playersData;
 	}
 	
-	public static PlayersSeenSavedData create() {
-		return new PlayersSeenSavedData(new ArrayList<PlayerSeenData>());
+	public static PlayerDeathsDataTable create() {
+		return new PlayerDeathsDataTable(new ArrayList<PlayerDeathDataRow>());
 	}
 	
 	@Override
@@ -30,72 +30,72 @@ public final class PlayersSeenSavedData extends SavedData {
 		ListTag listTag = new ListTag();
 		
 		// Iterate through all player data.
-		for(PlayerSeenData playerData : this.playersDataTable) {
+		for(PlayerDeathDataRow dataRow : this.rows) {
 			
 			// Serialize player data to NBT.
-			CompoundTag playerTag = playerData.serialize();
+			CompoundTag playerTag = dataRow.serialize();
 
 			// Add NBT to list.
 			listTag.add(playerTag);
 		}
-
+		
 		// Store all NBTs to server data.
 		compoundTag.put(KEY, listTag);
 
 		// Return server data back for further processing.
 		return compoundTag;
 	}
-
-	public static PlayersSeenSavedData load(CompoundTag compoundTag) {
-		
+	
+	public static PlayerDeathsDataTable load(CompoundTag compoundTag) {
+			
 		// Load list of NBTs from server data.
 		ListTag listTag = compoundTag.getList(KEY, Tag.TAG_COMPOUND);
 		
 		// Create new empty list that will hold all data.
-		ArrayList<PlayerSeenData> playersData = new ArrayList<PlayerSeenData>();
+		ArrayList<PlayerDeathDataRow> dataRows = new ArrayList<PlayerDeathDataRow>();
 		
 		// Iterate through all NBTs.
 		for(Tag tag : listTag) {
 			
 			// Deserialize NBT back to regular object.
-			PlayerSeenData playerData = PlayerSeenData.deserialize((CompoundTag)tag);
+			PlayerDeathDataRow dataRow = PlayerDeathDataRow.deserialize((CompoundTag)tag);
 			
 			// Add object to array of data.
-			playersData.add(playerData);
+			dataRows.add(dataRow);
 		}
 		
 		// Create new instance of saved data class and provide data that was loaded to it.
-		return new PlayersSeenSavedData(playersData);
+		return new PlayerDeathsDataTable(dataRows);
 	}
 	
-	public List<PlayerSeenData> getPlayersData(){
-		return this.playersDataTable;
+	public List<PlayerDeathDataRow> getRows(){
+		return this.rows;
 	}
 	
-	public void upsertPlayerData(PlayerSeenData playerData) {
+	public void upsertDataRow(PlayerDeathDataRow newDataRow) {
 
 		// Find existing log of player seen data based on username and UUID.
-		Optional<PlayerSeenData> searchResult = this.playersDataTable
+		Optional<PlayerDeathDataRow> searchResult = this.rows
 				.stream()
-				.filter($playerDataRow -> $playerDataRow.getPlayerName().contentEquals(playerData.getPlayerName()) && $playerDataRow.getPlayerId().equals(playerData.getPlayerId()))
+				.filter($p -> $p.getPlayerId().equals(newDataRow.getPlayerId()))
 				.findFirst();
 
 		// IF: Log exists.
 		if(searchResult.isPresent()) {
 			
 			// Extract the log.
-			PlayerSeenData existing = searchResult.get();
+			PlayerDeathDataRow existingDataRow = searchResult.get();
 
-			// Change the log timestamp.
-			existing.setTimeStamp(playerData.getTimestamp());
-
+			existingDataRow.setBlockPos(newDataRow.getBlockPos());
+			
 		} else {
 			
 			// Add new log.
-			this.playersDataTable.add(playerData);
+			this.rows.add(newDataRow);
 		}
 		
 		// Set data to be dirty as changes have been made.
 		this.setDirty();
 	}
-}
+	
+}	

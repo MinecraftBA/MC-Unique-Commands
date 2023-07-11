@@ -7,7 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -81,11 +81,11 @@ public final class HomeReturnCommand {
 		ResourceLocation resLoc = new ResourceLocation(resLocId);
 		
 		// Get resource key for dimension.
-		ResourceKey<Level> resKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, resLoc);
+		ResourceKey<Level> resKey = ResourceKey.create(Registries.DIMENSION, resLoc);
 		
 		// Get reference to server where code is running.
 		MinecraftServer server = player.getServer();
-		
+
 		// Get reference to level that was saved with command.
 		ServerLevel level = server.getLevel(resKey);
 		
@@ -95,13 +95,17 @@ public final class HomeReturnCommand {
 		// Teleport player to coordinates.
 		player.teleportTo(level, x, y, z, yaw, pitch);
 		
-		// Create success message.
-		MutableComponent message = Component.translatable(
-			"command."  + UniqueCommandsMod.MODID + ".home_return.success", locName, x, y, z
-		);
-		
 		// Send confirmation message.
-		source.sendSuccess(message, true);
+		source.sendSuccess(() -> {
+
+			// Create success message.
+			MutableComponent message = Component.translatable(
+				"command."  + UniqueCommandsMod.MODID + ".home_return.success", locName, x, y, z
+			);
+			
+			return message;
+			
+		}, true);
 		
 		// Return success code.
 		return 1;
