@@ -1,10 +1,8 @@
 package ba.minecraft.uniquecommands.common.command.die;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -24,28 +22,30 @@ public final class DieCommand {
 							}
 						)
 					);
-			
 	}
+	
 	private static int die(CommandSourceStack source) throws CommandSyntaxException {
 
 		// Get reference to player that has typed the command.
 		ServerPlayer player = source.getPlayerOrException();
+
+		// IF: Player is not alive.
+		if(!player.isAlive()) {
+			
+			// Create error message.
+			MutableComponent message = Component.literal(
+				"You are already dead."
+			);
+				
+			// Send error message.
+			source.sendFailure(message);
+
+			return -1;
+		}
 		
-		
+		// Kill the player.
 		player.kill();
 
-			// Create message to be displayed in console.		
-		source.sendSuccess(() -> {
-
-			// Create message to be displayed in console.		
-			MutableComponent message = Component.translatable(
-				"command." + UniqueCommandsMod.MODID + ".die.success"
-			);
-			
-
-			return message;
-			
-		}, true);
 		return 1;
 	}
 }
