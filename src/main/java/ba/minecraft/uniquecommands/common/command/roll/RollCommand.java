@@ -4,12 +4,12 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 
 public final class RollCommand {
@@ -28,21 +28,16 @@ public final class RollCommand {
 						)
 				)
 		);
-		
 	}
+	
 	private static int roll(CommandSourceStack source, int maxValue) throws CommandSyntaxException {
 		
-		// Get reference to a level where command was executed.
-		ServerLevel level = source.getLevel();
-		
-		// Get reference to random generator.
-		RandomSource random = level.getRandom();
-		int roll = random.nextInt(maxValue);
-		if(!(maxValue >= 0)) {
+		// IF: Max value is not at least 2.
+		if(maxValue < 2) {
 			
 			// Create error message.
 			MutableComponent message = Component.literal(
-				"You can't type a negative integer"
+				"Max roll value must be greater or equal to 2."
 			);
 				
 			// Send error message.
@@ -50,23 +45,30 @@ public final class RollCommand {
 
 			return -1;
 		}
-		if(!(roll <= maxValue)) {
-			return -1;
-			
-		}
-		source.sendSuccess(() -> {
-
-			// Create message to be displayed in console.		
-			MutableComponent message = Component.literal(
-					"You rolled "+ random + "."
-				);
-			
-
-			return message;
-			
-		}, true);
-		return 1;
-
 		
+		// Get reference to a level where command was executed.
+		ServerLevel level = source.getLevel();
+		
+		// Get reference to random generator.
+		RandomSource random = level.getRandom();
+		
+		// Create random roll.
+		int roll = random.nextInt(maxValue);
+
+		// Get reference to a player that has typed the command.
+		ServerPlayer player = source.getPlayerOrException();
+		
+		// Get name of the player.
+		Component playerName = player.getDisplayName();
+
+		// Create message to be displayed in console.		
+		MutableComponent message = Component.literal(
+			playerName + " rolled: "+ roll + "/" + maxValue
+		);
+
+		// Send message to all players.
+		source.sendSystemMessage(message);
+		
+		return 1;
 	}
 }
