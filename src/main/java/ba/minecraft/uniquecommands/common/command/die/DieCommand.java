@@ -20,14 +20,13 @@ public final class DieCommand {
 						.executes(
 							(context) -> {
 								CommandSourceStack source = context.getSource();
-								String playerName = StringArgumentType.getString(context, "playerName");
-								return die(source,playerName);
+								return die(source);
 							}
 						)
 					);
 			
 	}
-	private static int die(CommandSourceStack source,String playerName ) throws CommandSyntaxException {
+	private static int die(CommandSourceStack source) throws CommandSyntaxException {
 
 		// Get reference to player that has typed the command.
 		ServerPlayer player = source.getPlayerOrException();
@@ -40,8 +39,7 @@ public final class DieCommand {
 
 			// Create message to be displayed in console.		
 			MutableComponent message = Component.translatable(
-				"command." + UniqueCommandsMod.MODID + ".die.success", 
-				playerName
+				"command." + UniqueCommandsMod.MODID + ".die.success"
 			);
 			
 
