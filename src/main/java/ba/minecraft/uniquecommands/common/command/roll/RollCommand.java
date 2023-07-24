@@ -33,7 +33,7 @@ public final class RollCommand {
 	private static int roll(CommandSourceStack source, int maxValue) throws CommandSyntaxException {
 		ServerLevel level = source.getLevel();
 		RandomSource random = level.getRandom();
-		int roll = random.nextInt(100);
+		int roll = random.nextInt(maxValue);
 		if(!(maxValue >= 0)) {
 			
 			// Create error message.
