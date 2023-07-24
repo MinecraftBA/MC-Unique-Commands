@@ -8,6 +8,7 @@ import ba.minecraft.uniquecommands.common.command.home.HomeDeleteCommand;
 import ba.minecraft.uniquecommands.common.command.home.HomeListCommand;
 import ba.minecraft.uniquecommands.common.command.home.HomeReturnCommand;
 import ba.minecraft.uniquecommands.common.command.home.HomeSetCommand;
+import ba.minecraft.uniquecommands.common.command.roll.RollCommand;
 import ba.minecraft.uniquecommands.common.command.seen.SeenCommand;
 import ba.minecraft.uniquecommands.common.command.where.WhereCommand;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -31,6 +32,7 @@ public final class RegisterCommandsEventHandler {
 		WhereCommand.register(event.getDispatcher());
 		GravebackCommand.register(event.getDispatcher());
 		DieCommand.register(event.getDispatcher());
+		RollCommand.register(event.getDispatcher());
 		
 	}
 	
