@@ -30,9 +30,15 @@ public final class RollCommand {
 		);
 		
 	}
+	
 	private static int roll(CommandSourceStack source, int maxValue) throws CommandSyntaxException {
+		
+		// Get reference to a level where command was executed.
 		ServerLevel level = source.getLevel();
+		
+		// Get reference to random generator.
 		RandomSource random = level.getRandom();
+
 		int roll = random.nextInt(100);
 		if(!(maxValue >= 0)) {
 			
