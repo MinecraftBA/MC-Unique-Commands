@@ -1,5 +1,6 @@
 package ba.minecraft.uniquecommands.common.command.roll;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -58,9 +59,12 @@ public final class RollCommand {
 		// Get reference to a player that has typed the command.
 		ServerPlayer player = source.getPlayerOrException();
 		
-		// Get name of the player.
-		Component playerName = player.getDisplayName();
-
+		// Get player profile.
+		GameProfile playerProfile = player.getGameProfile();
+		
+		// Get player name.
+		String playerName = playerProfile.getName();
+		
 		// Create message to be displayed in console.		
 		MutableComponent message = Component.literal(
 			playerName + " rolled: "+ roll + "/" + maxValue
