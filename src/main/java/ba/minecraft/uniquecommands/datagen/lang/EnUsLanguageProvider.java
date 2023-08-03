@@ -45,6 +45,8 @@ public final class EnUsLanguageProvider extends LanguageProvider {
 		
 		addCommandSuccess("where", "Player %1$s is located at: %2$s %3$s %4$s (%5$s)");
 		addCommandFailure("where", "Player %1$s could not be found!");
+		
+		addCommandSuccess("die", "A Player has died");
 	}
 	
 }
