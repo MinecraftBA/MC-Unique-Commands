@@ -1,8 +1,9 @@
-package ba.minecraft.uniquecommands.common.command.tpup;
+package ba.minecraft.uniquecommands.common.command.tp;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import ba.minecraft.uniquecommands.common.core.helper.TeleportationHelper;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -10,8 +11,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 
 public class TpUpCommand {
 	
@@ -52,39 +51,25 @@ public class TpUpCommand {
 			
 			// Get position of block above.
 			BlockPos blockPos = new BlockPos(x,i,z);
-			
-			BlockPos aboveBlockPos = blockPos.above();
-			BlockPos belowBlockPos = blockPos.below();
-			
-			// Get blockstate of block above.
-			BlockState blockState = level.getBlockState(blockPos);
-			BlockState aboveBlockState = level.getBlockState(aboveBlockPos);
-			BlockState belowBlockState = level.getBlockState(belowBlockPos);
-			
-			// IF: Block is free for transportation.
-  		    if(blockState.is(Blocks.AIR)) {
-  		    	if(aboveBlockState.is(Blocks.AIR)) {
-  		    		if(!belowBlockState.is(Blocks.AIR)) {
-  		    			player.teleportTo(level, x, i, z, yaw, pitch);
-  		    			return 1;
-  		    		} 
-  		    	} 
-  		    		
-  			    	
-  			    
 
+			// IF: Location is safe for teleportation.
+			if(TeleportationHelper.isSafe(level, blockPos)) {
 				
-		    }
+				// Teleport player.
+	    		player.teleportTo(level, x, i, z, yaw, pitch);
+	    		return 1;
+			}
   			
 		}
+
 		// Create error message.
-			MutableComponent message = Component.literal(
-				"There is no block above you. Have you made a base above height limit?"
-			);
-				
-			// Send error message.
-			source.sendFailure(message);
+		MutableComponent message = Component.literal(
+			"There is no block above you. Have you made a base above height limit?"
+		);
 			
-			return -1;
+		// Send error message.
+		source.sendFailure(message);
+		
+		return -1;
 	}
 }
