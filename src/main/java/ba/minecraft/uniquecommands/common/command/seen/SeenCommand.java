@@ -50,9 +50,8 @@ public final class SeenCommand {
 		if (playersSeenData.size() == 0) {
 			
 			// Create error message.
-			MutableComponent message = Component.translatable(
-				"command." + UniqueCommandsMod.MODID + ".seen.failure",
-				playerName
+			MutableComponent message = Component.literal(
+				"Player " + playerName + " was never seen before." 
 			);
 			
 			// Send error message.

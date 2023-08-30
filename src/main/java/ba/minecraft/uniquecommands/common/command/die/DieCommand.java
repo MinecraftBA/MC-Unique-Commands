@@ -34,7 +34,7 @@ public final class DieCommand {
 			
 			// Create error message.
 			MutableComponent message = Component.literal(
-				"You are already dead."
+				"You are already dead. How did you manage to type this command?"
 			);
 				
 			// Send error message.

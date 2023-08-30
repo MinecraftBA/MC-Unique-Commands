@@ -41,7 +41,6 @@ public final class EnUsLanguageProvider extends LanguageProvider {
 		addCommandFailure("home_delete", "Home %1$s was not found!");
 
 		addCommandSuccess("seen", "Player %1$s was last seen %2$s (UUID: %3$s)");
-		addCommandFailure("seen", "Player %1$s was never seen!");
 		
 		addCommandSuccess("where", "Player %1$s is located at: %2$s %3$s %4$s (%5$s)");
 		addCommandFailure("where", "Player %1$s could not be found!");
