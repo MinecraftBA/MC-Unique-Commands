@@ -10,6 +10,7 @@ import ba.minecraft.uniquecommands.common.command.home.HomeReturnCommand;
 import ba.minecraft.uniquecommands.common.command.home.HomeSetCommand;
 import ba.minecraft.uniquecommands.common.command.roll.RollCommand;
 import ba.minecraft.uniquecommands.common.command.seen.SeenCommand;
+import ba.minecraft.uniquecommands.common.command.tpup.TpUpCommand;
 import ba.minecraft.uniquecommands.common.command.where.WhereCommand;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -33,6 +34,7 @@ public final class RegisterCommandsEventHandler {
 		GravebackCommand.register(event.getDispatcher());
 		DieCommand.register(event.getDispatcher());
 		RollCommand.register(event.getDispatcher());
+		TpUpCommand.register(event.getDispatcher());
 		
 	}
 	
