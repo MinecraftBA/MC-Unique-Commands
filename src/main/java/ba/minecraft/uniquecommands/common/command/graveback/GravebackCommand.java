@@ -10,6 +10,8 @@ import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataRow;
 import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -43,17 +45,16 @@ public final class GravebackCommand {
 		float yaw = player.getYRot();
 		float pitch = player.getXRot();
 		
-		
 		Optional<PlayerDeathDataRow> optionalDataRow = PlayerManager.loadDeathData(serverLevel, playerId);
-		
 		
 		// IF: Data row was found.
 		if(optionalDataRow.isPresent()) {
 			
-			// Gets data row.
+			// Get data row value.
 			PlayerDeathDataRow dataRow = optionalDataRow.get();
 				
-			int posX = dataRow.getPosX();	
+			// Get coordinates from data row.
+			int posX = dataRow.getPosX();
 			int posY = dataRow.getPosY();
 			int posZ = dataRow.getPosZ();
 			
@@ -61,7 +62,16 @@ public final class GravebackCommand {
 			player.teleportTo(serverLevel,posX,posY,posZ,yaw,pitch);
 			
 			return 1;
+			
 		} else {
+			
+			// Create error message.
+			MutableComponent message = Component.literal(
+				"You have never died on this world before. Have you considered playing hardcore?"
+			);
+				
+			// Send error message.
+			source.sendFailure(message);
 			
 			return -1;
 		}

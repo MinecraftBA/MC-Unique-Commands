@@ -77,8 +77,8 @@ public final class HomeSetCommand {
 		source.sendSuccess(() -> {
 
 			// Create message to be displayed in console.		
-			MutableComponent message = Component.translatable(
-				"command." + UniqueCommandsMod.MODID + ".home_set.success", locName, x, y, z
+			MutableComponent message = Component.literal(
+				"Home " + locName + " is set to: " + x + " " + y + " " + z + ""
 			);
 			
 			return message;

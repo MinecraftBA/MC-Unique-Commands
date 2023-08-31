@@ -10,7 +10,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
 import ba.minecraft.uniquecommands.common.core.data.PlayerSeenData;
 import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
 import net.minecraft.commands.CommandSourceStack;
@@ -50,9 +49,8 @@ public final class SeenCommand {
 		if (playersSeenData.size() == 0) {
 			
 			// Create error message.
-			MutableComponent message = Component.translatable(
-				"command." + UniqueCommandsMod.MODID + ".seen.failure",
-				playerName
+			MutableComponent message = Component.literal(
+				"Player " + playerName + " was never seen before." 
 			);
 			
 			// Send error message.
@@ -68,7 +66,7 @@ public final class SeenCommand {
 			// Get player UUID from saved data.
 			UUID playerUuid = $playerSeenData.getPlayerId();
 
-			// Get first 8 characters of player UUID.
+			// Get first 8 characters of player UUID - not more to avoid impersonation.
 			String playerId = StringUtils.truncate(playerUuid.toString(), 8);
 			
 			// Get timestamp when player was last seen.
@@ -84,13 +82,9 @@ public final class SeenCommand {
 			source.sendSuccess(() -> {
 
 				// Create message to be displayed in console.		
-				MutableComponent message = Component.translatable(
-					"command." + UniqueCommandsMod.MODID + ".seen.success", 
-					playerName, 
-					formattedTimestamp,
-					playerId
+				MutableComponent message = Component.literal(
+					"Player " + playerName + " was last seen " + formattedTimestamp + " (UUID: " + playerId + ")"
 				);
-				
 
 				return message;
 				
