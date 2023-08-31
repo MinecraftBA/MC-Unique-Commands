@@ -30,22 +30,11 @@ public final class EnUsLanguageProvider extends LanguageProvider {
 		addCommandSuccess("home_set", "Home %1$s is set to: %2$s %3$s %4$s");
 
 		addCommandSuccess("home_return", "Returned to home %1$s: %2$s %3$s %4$s");
-		addCommandFailure("home_return", "Home was not set!");
 		
 		addCommandSuccess("home_list", "Home %1$s is set to: %2$s %3$s %4$s (%5$s)");
 		
-		addCommandSuccess("home_clear", "All homes have been cleared.");
-		addCommandFailure("home_clear", "Homes were not cleared.");
-		
-		addCommandSuccess("home_delete", "Home %1$s was deleted.");
-		addCommandFailure("home_delete", "Home %1$s was not found!");
-
-		addCommandSuccess("seen", "Player %1$s was last seen %2$s (UUID: %3$s)");
-		
 		addCommandSuccess("where", "Player %1$s is located at: %2$s %3$s %4$s (%5$s)");
 		addCommandFailure("where", "Player %1$s could not be found!");
-		
-		addCommandSuccess("die", "A Player has died");
 	}
 	
 }

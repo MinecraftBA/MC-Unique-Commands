@@ -57,8 +57,8 @@ public final class HomeDeleteCommand {
 			
 			source.sendSuccess(() -> {
 
-				MutableComponent message = Component.translatable(
-					"command."  + UniqueCommandsMod.MODID + ".home_delete.success", locName
+				MutableComponent message = Component.literal(
+						"Home " + locName + " was deleted."
 				);
 
 				return message;
@@ -68,8 +68,8 @@ public final class HomeDeleteCommand {
 			return 1;
 		} else {
 
-			MutableComponent message = Component.translatable(
-				"command."  + UniqueCommandsMod.MODID + ".home_delete.failure", locName
+			MutableComponent message = Component.literal(
+				"Home " + locName + " was not found!"
 			);
 			
 			source.sendFailure(message);

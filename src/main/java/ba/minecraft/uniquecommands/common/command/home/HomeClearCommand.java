@@ -68,8 +68,8 @@ public final class HomeClearCommand {
 			source.sendSuccess(() -> {
 
 				// Create success message.
-				MutableComponent message = Component.translatable(
-					"command."  + UniqueCommandsMod.MODID + ".home_clear.success"
+				MutableComponent message = Component.literal(
+					"All homes have been cleared."
 				);
 				
 				return message;
@@ -81,8 +81,8 @@ public final class HomeClearCommand {
 		} else {
 
 			// Create failure message.
-			MutableComponent message = Component.translatable(
-				"command."  + UniqueCommandsMod.MODID + ".home_clear.failure"
+			MutableComponent message = Component.literal(
+				"No homes were found/cleared."
 			);
 			
 			// Send confirmation message.

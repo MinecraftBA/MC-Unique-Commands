@@ -83,13 +83,9 @@ public final class SeenCommand {
 			source.sendSuccess(() -> {
 
 				// Create message to be displayed in console.		
-				MutableComponent message = Component.translatable(
-					"command." + UniqueCommandsMod.MODID + ".seen.success", 
-					playerName, 
-					formattedTimestamp,
-					playerId
+				MutableComponent message = Component.literal(
+					"Player " + playerName + " was last seen " + formattedTimestamp + " (UUID: " + playerId + ")"
 				);
-				
 
 				return message;
 				

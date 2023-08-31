@@ -58,8 +58,8 @@ public final class HomeReturnCommand {
 		if (coordinates.length == 0) {
 			
 			// Create error message.
-			MutableComponent message = Component.translatable(
-				"command." + UniqueCommandsMod.MODID + ".home_return.failure"
+			MutableComponent message = Component.literal(
+					"Home with name " + locName + " was not set!"
 			);
 			
 			// Send error message.
