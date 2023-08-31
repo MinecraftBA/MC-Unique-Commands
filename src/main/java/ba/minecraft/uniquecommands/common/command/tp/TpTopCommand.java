@@ -16,17 +16,17 @@ public class TpTopCommand {
 	
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 		dispatcher.register(
-				Commands.literal("tpbottom")
+				Commands.literal("tptop")
 						.executes(
 							(context) -> {
 								CommandSourceStack source = context.getSource();
-								return tpbottom(source);
+								return tptop(source);
 							}
 						)
 					);
 	}
 	
-	private static int tpbottom(CommandSourceStack source) throws CommandSyntaxException {
+	private static int tptop(CommandSourceStack source) throws CommandSyntaxException {
 
 		// Get reference to player that has typed the command.
 		ServerPlayer player = source.getPlayerOrException();
