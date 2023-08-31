@@ -47,7 +47,7 @@ public class TpTopCommand {
 		float pitch = player.getXRot();
 
 		// Iterate through all blocks from player's current position to max world height.
-		for(int i= 320; i < y+3; i--) {
+		for(int i= 320; i > y+3; i--) {
 			
 			// Get position of block above.
 			BlockPos blockPos = new BlockPos(x,i,z);
