@@ -99,8 +99,8 @@ public final class HomeReturnCommand {
 		source.sendSuccess(() -> {
 
 			// Create success message.
-			MutableComponent message = Component.translatable(
-				"command."  + UniqueCommandsMod.MODID + ".home_return.success", locName, x, y, z
+			MutableComponent message = Component.literal(
+				"Returned to home " + locName + ": " + x + " " + y + " " + z + ""
 			);
 			
 			return message;

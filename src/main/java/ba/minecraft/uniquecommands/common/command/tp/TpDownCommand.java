@@ -46,7 +46,7 @@ public class TpDownCommand {
 		float yaw = player.getYRot();
 		float pitch = player.getXRot();
 
-		// Iterate through all blocks from player's current position to max world height.
+		// Iterate through all blocks from player's current position to world bottom.
 		for(int i=y-3; i > -64; i--) {
 			
 			// Get position of block above.
@@ -64,7 +64,7 @@ public class TpDownCommand {
 
 		// Create error message.
 		MutableComponent message = Component.literal(
-			"There is no block beneath you. Have you made a base beneath Bedrock?"
+				"There is nothing below you where you can teleport and stand on."
 		);
 			
 		// Send error message.

@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -50,10 +49,10 @@ public final class WhereCommand {
 		
 		// IF: Player was not found.
 		if (serverPlayer == null) {
+			
 			// Create error message.
-			MutableComponent message = Component.translatable(
-				"command." + UniqueCommandsMod.MODID + ".where.failure",
-				playerName
+			MutableComponent message = Component.literal(
+				"Player " + playerName + " could not be found!"
 			);
 			
 			// Send error message.
@@ -88,12 +87,7 @@ public final class WhereCommand {
 
 			// Create message to be displayed in console.		
 			MutableComponent message = Component.translatable(
-				"command." + UniqueCommandsMod.MODID + ".where.success", 
-				playerName, 
-				x,
-				y,
-				z,
-				dimensionName
+				"Player " + playerName + " is located at: " + x + " " + y + " " + z + " (" + dimensionName + ")"
 			);
 			
 			return message;

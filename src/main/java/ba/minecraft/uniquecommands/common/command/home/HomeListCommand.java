@@ -64,7 +64,7 @@ public final class HomeListCommand {
 
 					// Create success message.
 					MutableComponent message = Component.translatable(
-						"command."  + UniqueCommandsMod.MODID + ".home_list.success", locName, x, y, z, resLocId
+							"Home " + locName + " is set to: " + x + " " + y + " " + z + " (" + resLocId + ")"
 					);
 					
 					return message;

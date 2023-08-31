@@ -10,7 +10,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
 import ba.minecraft.uniquecommands.common.core.data.PlayerSeenData;
 import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
 import net.minecraft.commands.CommandSourceStack;
@@ -67,7 +66,7 @@ public final class SeenCommand {
 			// Get player UUID from saved data.
 			UUID playerUuid = $playerSeenData.getPlayerId();
 
-			// Get first 8 characters of player UUID.
+			// Get first 8 characters of player UUID - not more to avoid impersonation.
 			String playerId = StringUtils.truncate(playerUuid.toString(), 8);
 			
 			// Get timestamp when player was last seen.

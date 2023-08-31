@@ -46,7 +46,7 @@ public class TpBottomCommand {
 		float yaw = player.getYRot();
 		float pitch = player.getXRot();
 
-		// Iterate through all blocks from player's current position to max world height.
+		// Iterate from the world buttom until next free space below player.
 		for(int i= -64; i < y-3; i++) {
 			
 			// Get position of block above.
@@ -64,7 +64,7 @@ public class TpBottomCommand {
 
 		// Create error message.
 		MutableComponent message = Component.literal(
-			"There is no block beneath you. Have you made a base under bedrock?"
+				"There is nothing below you where you can teleport and stand on."
 		);
 			
 		// Send error message.

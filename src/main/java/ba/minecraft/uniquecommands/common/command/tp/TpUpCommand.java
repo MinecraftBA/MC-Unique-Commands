@@ -64,7 +64,7 @@ public class TpUpCommand {
 
 		// Create error message.
 		MutableComponent message = Component.literal(
-			"There is no block above you. Have you made a base above height limit?"
+				"There is nothing above you where you can teleport and stand on."
 		);
 			
 		// Send error message.
