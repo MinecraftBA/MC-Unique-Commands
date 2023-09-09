@@ -85,7 +85,7 @@ public class MeetCommand {
 		// Get current timestamp.
 		LocalDateTime now = LocalDateTime.now();
 
-		// Get timestamp as string.
+		// Get timestamp as string => 2023_09_14_15_12_11
 		String timestamp = formatter.format(now);
 		
 		// Create counter of summons.
@@ -104,7 +104,7 @@ public class MeetCommand {
 			if(playerId != summonerId) {
 
 				// Save current location of player before teleporting with name such as: meeting_2023_09_09_23_15_00.
-				PlayerManager.saveLocationData(player, "meeting " + timestamp);
+				PlayerManager.saveLocationData(player, "Meeting_" + timestamp);
 				
 				// Get current rotation of player.
 				float yaw = player.getYRot();
@@ -121,7 +121,7 @@ public class MeetCommand {
 		
 		// Create message to be displayed in console.		
 		MutableComponent message = Component.literal(
-			summonCount + " player(s) have been summoned to your location."
+			summonCount + " player(s) have joined your meeting."
 		);
 		
 		// Send message to console.
