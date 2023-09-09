@@ -1,5 +1,7 @@
 package ba.minecraft.uniquecommands.common.command.meet;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -7,6 +9,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -76,8 +79,18 @@ public class MeetCommand {
 			return -1;
 		}
 		
-		int summonCount = 0;
+		// Create formatter for date and time.
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");  
+
+		// Get current timestamp.
+		LocalDateTime now = LocalDateTime.now();
+
+		// Get timestamp as string.
+		String timestamp = formatter.format(now);
 		
+		// Create counter of summons.
+		int summonCount = 0;
+
 		// Iterate through all players.
 		for(ServerPlayer player : players) {
 			
@@ -89,6 +102,10 @@ public class MeetCommand {
 
 			// IF: player is not summoner.
 			if(playerId != summonerId) {
+
+				// Save current location of player before teleporting with name such as: meeting_2023_09_09_23_15_00.
+				PlayerManager.saveLocationData(player, "meeting " + timestamp);
+				
 				// Get current rotation of player.
 				float yaw = player.getYRot();
 				float pitch = player.getXRot();
@@ -96,6 +113,7 @@ public class MeetCommand {
 				// Teleport player to summoner location.
 				player.teleportTo(level, x, y, z, yaw, pitch);
 				
+				// Increase counter of summons.
 				summonCount++;
 			}
 			
@@ -103,7 +121,7 @@ public class MeetCommand {
 		
 		// Create message to be displayed in console.		
 		MutableComponent message = Component.literal(
-			summonCount + " players has been summoned to your location."
+			summonCount + " player(s) have been summoned to your location."
 		);
 		
 		// Send message to console.
