@@ -8,6 +8,7 @@ import ba.minecraft.uniquecommands.common.command.home.HomeDeleteCommand;
 import ba.minecraft.uniquecommands.common.command.home.HomeListCommand;
 import ba.minecraft.uniquecommands.common.command.home.HomeReturnCommand;
 import ba.minecraft.uniquecommands.common.command.home.HomeSetCommand;
+import ba.minecraft.uniquecommands.common.command.meet.MeetCommand;
 import ba.minecraft.uniquecommands.common.command.roll.RollCommand;
 import ba.minecraft.uniquecommands.common.command.seen.SeenCommand;
 import ba.minecraft.uniquecommands.common.command.tp.TpBottomCommand;
@@ -41,6 +42,7 @@ public final class RegisterCommandsEventHandler {
 		TpDownCommand.register(event.getDispatcher());
 		TpBottomCommand.register(event.getDispatcher());
 		TpTopCommand.register(event.getDispatcher());
+		MeetCommand.register(event.getDispatcher());
 		
 	}
 	

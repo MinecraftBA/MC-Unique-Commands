@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
+import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -44,6 +45,9 @@ public final class HomeSetCommand {
 		// Get reference to player that has typed the command.
 		ServerPlayer player = source.getPlayerOrException();
 		
+		// Save current location to player data.
+		PlayerManager.saveLocationData(player, locName);
+		
 		// Get position of lower player block.
 		BlockPos playerPos = player.blockPosition();
 		
@@ -51,39 +55,14 @@ public final class HomeSetCommand {
 		int x = playerPos.getX();
 		int y = playerPos.getY();
 		int z = playerPos.getZ();
-		
-		// Get reference to personal persistent data of player.
-		CompoundTag data = player.getPersistentData();
 
-		// Create key => experimentalmod:home
-		String key = UniqueCommandsMod.MODID + ":home:" + locName;
-		
-		// Save array of coordinates in persistent data under key.
-		data.putIntArray(key + ":coords", new int[] { x, y, z });
-		
-		// Get reference to level at which player is.
-		ServerLevel level = player.serverLevel();
-		
-		// Get resource key for the dimension of level.
-		ResourceKey<Level> dimension = level.dimension();
-		
-		// Get location of dimension resource.
-		ResourceLocation resLoc = dimension.location();
-		
-		// Save information about level.
-		data.putString(key + ":dim", resLoc.toString());
-		
+		// Create message to be displayed in console.		
+		MutableComponent message = Component.literal(
+			"Home " + locName + " is set to: " + x + " " + y + " " + z + ""
+		);
+
 		// Send message to console.
-		source.sendSuccess(() -> {
-
-			// Create message to be displayed in console.		
-			MutableComponent message = Component.literal(
-				"Home " + locName + " is set to: " + x + " " + y + " " + z + ""
-			);
-			
-			return message;
-			
-		}, true);
+		source.sendSuccess(() -> message, true);
 		
 		// Indicate success (1 = true).
 		return 1;

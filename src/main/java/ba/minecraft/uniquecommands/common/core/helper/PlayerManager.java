@@ -9,14 +9,17 @@ import java.util.Optional;
 import java.util.UUID;
 import com.mojang.authlib.GameProfile;
 
+import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
 import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataRow;
 import ba.minecraft.uniquecommands.common.core.data.PlayerSeenData;
 import ba.minecraft.uniquecommands.common.core.data.PlayerDeathsDataTable;
 import ba.minecraft.uniquecommands.common.core.data.PlayersSeenSavedData;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.DimensionDataStorage;
@@ -197,5 +200,37 @@ public final class PlayerManager {
 		
 		// Return search result.
 		return searchResult;
+	}
+	
+	public static void saveLocationData(ServerPlayer player, String locName) {
+
+		// Get position of lower player block.
+		BlockPos playerPos = player.blockPosition();
+		
+		// Get X, Y, Z coordinates of block position.
+		int x = playerPos.getX();
+		int y = playerPos.getY();
+		int z = playerPos.getZ();
+		
+		// Get reference to personal persistent data of player.
+		CompoundTag data = player.getPersistentData();
+
+		// Create key => experimentalmod:home
+		String key = UniqueCommandsMod.MODID + ":home:" + locName;
+		
+		// Save array of coordinates in persistent data under key.
+		data.putIntArray(key + ":coords", new int[] { x, y, z });
+		
+		// Get reference to level at which player is.
+		ServerLevel level = player.serverLevel();
+		
+		// Get resource key for the dimension of level.
+		ResourceKey<Level> dimension = level.dimension();
+		
+		// Get location of dimension resource.
+		ResourceLocation resLoc = dimension.location();
+		
+		// Save information about level.
+		data.putString(key + ":dim", resLoc.toString());
 	}
 }
