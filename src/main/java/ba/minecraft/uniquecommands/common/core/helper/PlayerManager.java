@@ -104,7 +104,7 @@ public final class PlayerManager {
 	private static PlayersSeenSavedData tryLoadPlayersSeenData(DimensionDataStorage storage) {
 
 		// Load saved data based on the key.
-		PlayersSeenSavedData savedData = storage.get(PlayersSeenSavedData::load, SEENS_KEY);
+		PlayersSeenSavedData savedData = storage.get(PlayersSeenSavedData.factory(), SEENS_KEY);
 		
 		// IF: Data was never saved before.
 		if(savedData == null) {
@@ -117,7 +117,7 @@ public final class PlayerManager {
 	private static PlayerDeathsDataTable loadPlayerDeathsDataTable(DimensionDataStorage dataStorage) {
 
 		// Load saved deaths data table based on the key which is stored in deaths.dat file.
-		PlayerDeathsDataTable dataTable = dataStorage.get(PlayerDeathsDataTable::load, DEATHS_KEY);
+		PlayerDeathsDataTable dataTable = dataStorage.get(PlayerDeathsDataTable.factory(), DEATHS_KEY);
 		
 		// IF: Data table was never saved before / it does not exist.
 		if(dataTable == null) {
