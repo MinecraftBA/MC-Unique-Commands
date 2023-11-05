@@ -7,6 +7,7 @@ import java.util.Optional;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
 
 public final class PlayerDeathsDataTable extends SavedData {
@@ -15,12 +16,20 @@ public final class PlayerDeathsDataTable extends SavedData {
 	
 	private final List<PlayerDeathDataRow> rows;
 	
+	public PlayerDeathsDataTable() {
+		this(new ArrayList<PlayerDeathDataRow>());
+	}
+	
 	public PlayerDeathsDataTable(List<PlayerDeathDataRow> playersData) {
 		this.rows = playersData;
 	}
 	
 	public static PlayerDeathsDataTable create() {
 		return new PlayerDeathsDataTable(new ArrayList<PlayerDeathDataRow>());
+	}
+	
+    public static SavedData.Factory<PlayerDeathsDataTable> factory() {
+		return new SavedData.Factory<>(PlayerDeathsDataTable::new, PlayerDeathsDataTable::load, DataFixTypes.PLAYER);
 	}
 	
 	@Override

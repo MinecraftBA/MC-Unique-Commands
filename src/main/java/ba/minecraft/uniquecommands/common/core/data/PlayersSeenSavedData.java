@@ -7,6 +7,8 @@ import java.util.Optional;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.util.datafix.DataFixTypes;
+import net.minecraft.world.level.ForcedChunksSavedData;
 import net.minecraft.world.level.saveddata.SavedData;
 
 public final class PlayersSeenSavedData extends SavedData {
@@ -19,8 +21,16 @@ public final class PlayersSeenSavedData extends SavedData {
 		this.playersDataTable = playersData;
 	}
 	
+	public PlayersSeenSavedData() {
+		this(new ArrayList<PlayerSeenData>());
+	}
+	
 	public static PlayersSeenSavedData create() {
 		return new PlayersSeenSavedData(new ArrayList<PlayerSeenData>());
+	}
+	
+    public static SavedData.Factory<PlayersSeenSavedData> factory() {
+		return new SavedData.Factory<>(PlayersSeenSavedData::new, PlayersSeenSavedData::load, DataFixTypes.PLAYER);
 	}
 	
 	@Override
