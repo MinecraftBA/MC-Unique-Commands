@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataRow;
 import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
 import net.minecraft.commands.CommandSourceStack;
@@ -20,6 +21,9 @@ public final class GravebackCommand {
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 		dispatcher.register(
 				Commands.literal("graveback")
+				.requires((source) -> {
+					return source.hasPermission(UniqueCommandsModConfig.GRAVEBACK_OP_LEVEL);
+						})
 						.executes(
 							(context) -> {
 								CommandSourceStack source = context.getSource();
@@ -31,7 +35,19 @@ public final class GravebackCommand {
 	}
 	
 	private static int graveback(CommandSourceStack source) throws CommandSyntaxException {
+		
+		if(!UniqueCommandsModConfig.GRAVEBACK_ENABLED) {
+			// Create error message.
+			MutableComponent message = Component.literal(
+				"Command is not enabled. Hey, not my fault!"
+			);
+				
+			// Send error message.
+			source.sendFailure(message);
 
+			return -1;
+		}
+		
 		// Get reference to player that has typed the command.
 		ServerPlayer player = source.getPlayerOrException();
 		

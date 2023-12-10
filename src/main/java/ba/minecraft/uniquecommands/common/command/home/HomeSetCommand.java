@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -21,6 +22,9 @@ public final class HomeSetCommand {
 					Commands.literal("set")
 						.then(
 							Commands.argument("name", StringArgumentType.word())
+							.requires((source) -> {
+								return source.hasPermission(UniqueCommandsModConfig.HOME_OP_LEVEL);
+							})
 								.executes(
 									(context) -> {
 										CommandSourceStack source = context.getSource();
@@ -35,7 +39,18 @@ public final class HomeSetCommand {
 	}
 	
 	private static int setHome(CommandSourceStack source, String locName) throws CommandSyntaxException {
+		
+		if(!UniqueCommandsModConfig.HOME_ENABLED) {
+			// Create error message.
+			MutableComponent message = Component.literal(
+				"Command is not enabled. Hey, not my fault!"
+			);
+				
+			// Send error message.
+			source.sendFailure(message);
 
+			return -1;
+		}
 		// Get reference to player that has typed the command.
 		ServerPlayer player = source.getPlayerOrException();
 		

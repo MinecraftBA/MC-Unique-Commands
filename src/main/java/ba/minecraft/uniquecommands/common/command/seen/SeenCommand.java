@@ -10,6 +10,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import ba.minecraft.uniquecommands.common.core.data.PlayerSeenData;
 import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
 import net.minecraft.commands.CommandSourceStack;
@@ -25,6 +26,9 @@ public final class SeenCommand {
 			Commands.literal("seen")
 				.then(
 					Commands.argument("playerName", StringArgumentType.word())
+					.requires((source) -> {
+						return source.hasPermission(UniqueCommandsModConfig.SEEN_OP_LEVEL);
+					})
 						.executes(
 							(context) -> {
 								CommandSourceStack source = context.getSource();
@@ -38,7 +42,18 @@ public final class SeenCommand {
 	}
 	
 	private static int displaySeen(CommandSourceStack source, String playerName) throws CommandSyntaxException {
+		
+		if(!UniqueCommandsModConfig.SEEN_ENABLED) {
+			// Create error message.
+			MutableComponent message = Component.literal(
+				"Command is not enabled. Hey, not my fault!"
+			);
+				
+			// Send error message.
+			source.sendFailure(message);
 
+			return -1;
+		}
 		// Get reference to server.
 		ServerLevel serverLevel = source.getLevel();
 		

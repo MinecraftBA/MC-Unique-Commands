@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
+import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.nbt.CompoundTag;
@@ -21,6 +22,9 @@ public final class HomeDeleteCommand {
 						Commands.literal("delete")
 							.then(
 								Commands.argument("name", StringArgumentType.word())
+								.requires((source) -> {
+									return source.hasPermission(UniqueCommandsModConfig.HOME_OP_LEVEL);
+								})
 									.executes(
 										(context) -> {
 											CommandSourceStack source = context.getSource();
@@ -35,7 +39,17 @@ public final class HomeDeleteCommand {
 	}
 	
 	private static int deleteHome(CommandSourceStack source,String locName) throws CommandSyntaxException {
-		
+		if(!UniqueCommandsModConfig.HOME_ENABLED) {
+			// Create error message.
+			MutableComponent message = Component.literal(
+				"Command is not enabled. Hey, not my fault!"
+			);
+				
+			// Send error message.
+			source.sendFailure(message);
+
+			return -1;
+		}
 		// Get reference to a player that called the command.
 		ServerPlayer player = source.getPlayerOrException();
 		

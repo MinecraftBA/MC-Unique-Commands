@@ -9,6 +9,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -25,6 +26,9 @@ public class MeetCommand {
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 		dispatcher.register(
 				Commands.literal("meet")
+				.requires((source) -> {
+					return source.hasPermission(UniqueCommandsModConfig.MEET_OP_LEVEL);
+				})
 						.executes(
 							(context) -> {
 								CommandSourceStack source = context.getSource();
@@ -36,6 +40,18 @@ public class MeetCommand {
 	}
 	
 	private static int meet(CommandSourceStack source) throws CommandSyntaxException {
+		
+		if(!UniqueCommandsModConfig.MEET_ENABLED) {
+			// Create error message.
+			MutableComponent message = Component.literal(
+				"Command is not enabled. Hey, not my fault!"
+			);
+				
+			// Send error message.
+			source.sendFailure(message);
+
+			return -1;
+		}
 		
 		// Get reference to a player that has typed the command => summoner.
 		ServerPlayer summoner = source.getPlayerOrException();
