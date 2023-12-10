@@ -15,6 +15,9 @@ public final class DieCommand {
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 		dispatcher.register(
 				Commands.literal("die")
+						.requires((source) -> {
+							return source.hasPermission(UniqueCommandsModConfig.DIE_OP_LEVEL);
+						})
 						.executes(
 							(context) -> {
 								CommandSourceStack source = context.getSource();
