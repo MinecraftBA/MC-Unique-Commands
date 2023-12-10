@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -24,20 +25,35 @@ public final class WhereCommand {
 			Commands.literal("where")
 				.then(
 					Commands.argument("playerName", StringArgumentType.word())
-						.executes(
-							(context) -> {
-								CommandSourceStack source = context.getSource();
-								String playerName = StringArgumentType.getString(context, "playerName");
-								return displayCoordinates(source, playerName);
-							}
-						)
+					.requires((source) -> {
+						return source.hasPermission(UniqueCommandsModConfig.WHERE_OP_LEVEL);
+					})
+					.executes(
+						(context) -> {
+							CommandSourceStack source = context.getSource();
+							String playerName = StringArgumentType.getString(context, "playerName");
+							return displayCoordinates(source, playerName);
+						}
+					)
 				)
 		);
 		
 	}
 	
 	private static int displayCoordinates(CommandSourceStack source, String playerName) throws CommandSyntaxException {
+		
+		if(!UniqueCommandsModConfig.HOME_ENABLED) {
+			// Create error message.
+			MutableComponent message = Component.literal(
+				"Command is not enabled. Hey, not my fault!"
+			);
+				
+			// Send error message.
+			source.sendFailure(message);
 
+			return -1;
+		}
+		
 		// Get reference to currently running Minecraft server instance.
 		MinecraftServer server = source.getServer();
 		

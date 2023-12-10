@@ -6,6 +6,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
+import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.nbt.CompoundTag;
@@ -20,19 +21,32 @@ public final class HomeListCommand {
 			Commands.literal("home")
 				.then(
 					Commands.literal("list")
-						.executes(
-							(context) -> {
-								CommandSourceStack source = context.getSource();
-								return listHome(source);
-							}
-						)
+					.requires((source) -> {
+						return source.hasPermission(UniqueCommandsModConfig.HOME_OP_LEVEL);
+					})
+					.executes(
+						(context) -> {
+							CommandSourceStack source = context.getSource();
+							return listHome(source);
+						}
+					)
 				)
 		);
 		
 	}
 	
 	private static int listHome(CommandSourceStack source) throws CommandSyntaxException {
+		if(!UniqueCommandsModConfig.HOME_ENABLED) {
+			// Create error message.
+			MutableComponent message = Component.literal(
+				"Command is not enabled. Hey, not my fault!"
+			);
+				
+			// Send error message.
+			source.sendFailure(message);
 
+			return -1;
+		}
 		// Get reference to player that has typed the command.
 		ServerPlayer player = source.getPlayerOrException();
 		
