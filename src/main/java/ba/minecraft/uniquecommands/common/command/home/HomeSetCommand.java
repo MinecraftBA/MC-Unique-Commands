@@ -25,13 +25,13 @@ public final class HomeSetCommand {
 							.requires((source) -> {
 								return source.hasPermission(UniqueCommandsModConfig.HOME_OP_LEVEL);
 							})
-								.executes(
-									(context) -> {
-										CommandSourceStack source = context.getSource();
-										String locName = StringArgumentType.getString(context, "name");
-										return setHome(source, locName);
-									}
-								)
+							.executes(
+								(context) -> {
+									CommandSourceStack source = context.getSource();
+									String locName = StringArgumentType.getString(context, "name");
+									return setHome(source, locName);
+								}
+							)
 
 						)
 				)

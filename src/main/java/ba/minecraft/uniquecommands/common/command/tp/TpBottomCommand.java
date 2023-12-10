@@ -21,13 +21,13 @@ public class TpBottomCommand {
 				.requires((source) -> {
 					return source.hasPermission(UniqueCommandsModConfig.TP_OP_LEVEL);
 				})
-						.executes(
-							(context) -> {
-								CommandSourceStack source = context.getSource();
-								return tpbottom(source);
-							}
-						)
-					);
+				.executes(
+					(context) -> {
+						CommandSourceStack source = context.getSource();
+						return tpbottom(source);
+					}
+				)
+			);
 	}
 	
 	private static int tpbottom(CommandSourceStack source) throws CommandSyntaxException {

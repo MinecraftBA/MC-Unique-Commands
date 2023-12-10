@@ -24,12 +24,12 @@ public final class HomeListCommand {
 					.requires((source) -> {
 						return source.hasPermission(UniqueCommandsModConfig.HOME_OP_LEVEL);
 					})
-						.executes(
-							(context) -> {
-								CommandSourceStack source = context.getSource();
-								return listHome(source);
-							}
-						)
+					.executes(
+						(context) -> {
+							CommandSourceStack source = context.getSource();
+							return listHome(source);
+						}
+					)
 				)
 		);
 		

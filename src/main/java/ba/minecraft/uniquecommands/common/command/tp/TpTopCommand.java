@@ -21,13 +21,13 @@ public class TpTopCommand {
 				.requires((source) -> {
 					return source.hasPermission(UniqueCommandsModConfig.TP_OP_LEVEL);
 				})
-						.executes(
-							(context) -> {
-								CommandSourceStack source = context.getSource();
-								return tptop(source);
-							}
-						)
-					);
+				.executes(
+					(context) -> {
+						CommandSourceStack source = context.getSource();
+						return tptop(source);
+					}
+				)
+			);
 	}
 	
 	private static int tptop(CommandSourceStack source) throws CommandSyntaxException {

@@ -29,13 +29,13 @@ public final class SeenCommand {
 					.requires((source) -> {
 						return source.hasPermission(UniqueCommandsModConfig.SEEN_OP_LEVEL);
 					})
-						.executes(
-							(context) -> {
-								CommandSourceStack source = context.getSource();
-								String playerName = StringArgumentType.getString(context, "playerName");
-								return displaySeen(source, playerName);
-							}
-						)
+					.executes(
+						(context) -> {
+							CommandSourceStack source = context.getSource();
+							String playerName = StringArgumentType.getString(context, "playerName");
+							return displaySeen(source, playerName);
+						}
+					)
 				)
 		);
 		

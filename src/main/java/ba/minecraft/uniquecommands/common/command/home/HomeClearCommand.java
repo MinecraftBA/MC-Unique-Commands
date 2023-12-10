@@ -24,12 +24,12 @@ public final class HomeClearCommand {
 						.requires((source) -> {
 							return source.hasPermission(UniqueCommandsModConfig.HOME_OP_LEVEL);
 						})
-							.executes(
-								(context) -> {
-									CommandSourceStack source = context.getSource();
-									return clearHome(source);
-								}
-							)
+						.executes(
+							(context) -> {
+								CommandSourceStack source = context.getSource();
+								return clearHome(source);
+							}
+						)
 					)
 			);
 	}

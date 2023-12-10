@@ -28,13 +28,13 @@ public final class WhereCommand {
 					.requires((source) -> {
 						return source.hasPermission(UniqueCommandsModConfig.WHERE_OP_LEVEL);
 					})
-						.executes(
-							(context) -> {
-								CommandSourceStack source = context.getSource();
-								String playerName = StringArgumentType.getString(context, "playerName");
-								return displayCoordinates(source, playerName);
-							}
-						)
+					.executes(
+						(context) -> {
+							CommandSourceStack source = context.getSource();
+							String playerName = StringArgumentType.getString(context, "playerName");
+							return displayCoordinates(source, playerName);
+						}
+					)
 				)
 		);
 		
@@ -53,6 +53,7 @@ public final class WhereCommand {
 
 			return -1;
 		}
+		
 		// Get reference to currently running Minecraft server instance.
 		MinecraftServer server = source.getServer();
 		

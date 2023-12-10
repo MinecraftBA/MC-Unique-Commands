@@ -29,13 +29,13 @@ public class MeetCommand {
 				.requires((source) -> {
 					return source.hasPermission(UniqueCommandsModConfig.MEET_OP_LEVEL);
 				})
-						.executes(
-							(context) -> {
-								CommandSourceStack source = context.getSource();
-								return meet(source);
-							}
-						)
-					);
+				.executes(
+					(context) -> {
+						CommandSourceStack source = context.getSource();
+						return meet(source);
+					}
+				)
+			);
 			
 	}
 	
