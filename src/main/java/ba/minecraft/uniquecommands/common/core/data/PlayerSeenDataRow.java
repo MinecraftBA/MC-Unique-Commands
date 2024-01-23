@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import net.minecraft.nbt.CompoundTag;
 
-public final class PlayerSeenData {
+public final class PlayerSeenDataRow {
 
 	private final static String UUID_KEY = "UUID";
 	private final static String NAME_KEY = "Name";
@@ -18,7 +18,7 @@ public final class PlayerSeenData {
 
 	private LocalDateTime timestamp;
 
-	public PlayerSeenData(LocalDateTime timestamp, UUID playerId, String playerName) {
+	public PlayerSeenDataRow(LocalDateTime timestamp, UUID playerId, String playerName) {
 		this.timestamp = timestamp;
 		this.playerId = playerId;
 		this.playerName = playerName;
@@ -39,7 +39,7 @@ public final class PlayerSeenData {
 		return compoundTag;
 	}
 
-	public static PlayerSeenData deserialize(CompoundTag compoundTag) {
+	public static PlayerSeenDataRow deserialize(CompoundTag compoundTag) {
 		
 		// Get stored local date when player was last seen.
 		long epochTimestamp = compoundTag.getLong(TIMESTAMP_KEY);
@@ -57,7 +57,7 @@ public final class PlayerSeenData {
 		String playerName = compoundTag.getString(NAME_KEY);
 		
 		// Create new instance of saved data.
-		PlayerSeenData savedData = new PlayerSeenData(timestamp, playerId, playerName);
+		PlayerSeenDataRow savedData = new PlayerSeenDataRow(timestamp, playerId, playerName);
 		
 		return savedData;
 	}

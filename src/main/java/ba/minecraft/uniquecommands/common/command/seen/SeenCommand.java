@@ -11,7 +11,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
-import ba.minecraft.uniquecommands.common.core.data.PlayerSeenData;
+import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataRow;
 import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -58,7 +58,7 @@ public final class SeenCommand {
 		ServerLevel serverLevel = source.getLevel();
 		
 		// Get seen data saved for provided player name.
-		List<PlayerSeenData> playersSeenData = PlayerManager.getSeen(serverLevel, playerName);
+		List<PlayerSeenDataRow> playersSeenData = PlayerManager.getSeen(serverLevel, playerName);
 		
 		// IF: Data was not saved for provided player name.
 		if (playersSeenData.size() == 0) {

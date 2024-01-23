@@ -11,9 +11,9 @@ import com.mojang.authlib.GameProfile;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
 import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataRow;
-import ba.minecraft.uniquecommands.common.core.data.PlayerSeenData;
-import ba.minecraft.uniquecommands.common.core.data.PlayerDeathsDataTable;
-import ba.minecraft.uniquecommands.common.core.data.PlayersSeenSavedData;
+import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataRow;
+import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataTable;
+import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataTable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -27,8 +27,8 @@ import net.minecraft.world.level.storage.DimensionDataStorage;
 public final class PlayerManager {
 
 	private static final String SEENS_KEY = "seens";
-	
 	private static final String DEATHS_KEY = "deaths";
+	private static final String ACCOUNTS_KEY = "accounts";
 
 	private static final Map<UUID, Long> teleports = 
 			new HashMap<UUID, Long>();
@@ -55,7 +55,6 @@ public final class PlayerManager {
 			return;
 		}
 
-
 		// Cast level to ServerLevel (since it is not client side.
 		ServerLevel serverLevel = (ServerLevel)level;
 
@@ -69,13 +68,13 @@ public final class PlayerManager {
 		String playerName = playerProfile.getName();
 		
 		// Create saved data.
-		PlayerSeenData playerData = new PlayerSeenData(LocalDateTime.now(), playerId, playerName);
+		PlayerSeenDataRow playerData = new PlayerSeenDataRow(LocalDateTime.now(), playerId, playerName);
 
 		// Get reference to server persistent data.
 		DimensionDataStorage storage = serverLevel.getDataStorage();
 
 		// Load players saved data.
-		PlayersSeenSavedData savedData = tryLoadPlayersSeenData(storage);
+		PlayerSeenDataTable savedData = tryLoadPlayersSeenData(storage);
 
 		// Insert or update data for specific player.
 		savedData.upsertPlayerData(playerData);
@@ -84,16 +83,16 @@ public final class PlayerManager {
 		storage.set(SEENS_KEY, savedData);
 	}		
 	
-	public static List<PlayerSeenData> getSeen(ServerLevel serverLevel, String playerName) {
+	public static List<PlayerSeenDataRow> getSeen(ServerLevel serverLevel, String playerName) {
 		
 		// Get reference to level storage.
 		DimensionDataStorage dataStorage = serverLevel.getDataStorage();
 		
 		// Load players saved data.
-		PlayersSeenSavedData savedData = tryLoadPlayersSeenData(dataStorage);
+		PlayerSeenDataTable savedData = tryLoadPlayersSeenData(dataStorage);
 		
 		// Get data for all players.
-		List<PlayerSeenData> playersData = savedData.getPlayersData();
+		List<PlayerSeenDataRow> playersData = savedData.getDataRows();
 		
 		// Return only players that match the player name.
 		return playersData.stream()
@@ -101,29 +100,29 @@ public final class PlayerManager {
 					      .toList();
 	}
 	
-	private static PlayersSeenSavedData tryLoadPlayersSeenData(DimensionDataStorage storage) {
+	private static PlayerSeenDataTable tryLoadPlayersSeenData(DimensionDataStorage storage) {
 
 		// Load saved data based on the key.
-		PlayersSeenSavedData savedData = storage.get(PlayersSeenSavedData.factory(), SEENS_KEY);
+		PlayerSeenDataTable savedData = storage.get(PlayerSeenDataTable.factory(), SEENS_KEY);
 		
 		// IF: Data was never saved before.
 		if(savedData == null) {
-			savedData = PlayersSeenSavedData.create();
+			savedData = PlayerSeenDataTable.create();
 		}
 		
 		return savedData;
 	}
 	
-	private static PlayerDeathsDataTable loadPlayerDeathsDataTable(DimensionDataStorage dataStorage) {
+	private static PlayerDeathDataTable loadPlayerDeathsDataTable(DimensionDataStorage dataStorage) {
 
 		// Load saved deaths data table based on the key which is stored in deaths.dat file.
-		PlayerDeathsDataTable dataTable = dataStorage.get(PlayerDeathsDataTable.factory(), DEATHS_KEY);
+		PlayerDeathDataTable dataTable = dataStorage.get(PlayerDeathDataTable.factory(), DEATHS_KEY);
 		
 		// IF: Data table was never saved before / it does not exist.
 		if(dataTable == null) {
 			
 			// Create data table for the first time and save it.
-			dataTable = PlayerDeathsDataTable.create();
+			dataTable = PlayerDeathDataTable.create();
 		}
 		
 		// Return data table.
@@ -173,7 +172,7 @@ public final class PlayerManager {
 		DimensionDataStorage dataStorage = serverLevel.getDataStorage();
 
 		// Load saved death data for all players.
-		PlayerDeathsDataTable dataTable = loadPlayerDeathsDataTable(dataStorage);
+		PlayerDeathDataTable dataTable = loadPlayerDeathsDataTable(dataStorage);
 
 		// Insert or update data for specific player.
 		dataTable.upsertDataRow(dataRow);
@@ -188,7 +187,7 @@ public final class PlayerManager {
 		DimensionDataStorage dataStorage = serverLevel.getDataStorage();
 		
 		// Load data table with deaths of all players.
-		PlayerDeathsDataTable dataTable = loadPlayerDeathsDataTable(dataStorage);
+		PlayerDeathDataTable dataTable = loadPlayerDeathsDataTable(dataStorage);
 		
 		// Get data rows for all players.
 		List<PlayerDeathDataRow> dataRows = dataTable.getRows();

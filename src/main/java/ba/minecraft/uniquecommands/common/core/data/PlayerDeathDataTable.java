@@ -10,26 +10,26 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
 
-public final class PlayerDeathsDataTable extends SavedData {
+public final class PlayerDeathDataTable extends SavedData {
 
 	private static final String KEY = "Players";
 	
 	private final List<PlayerDeathDataRow> rows;
 	
-	public PlayerDeathsDataTable() {
+	public PlayerDeathDataTable() {
 		this(new ArrayList<PlayerDeathDataRow>());
 	}
 	
-	public PlayerDeathsDataTable(List<PlayerDeathDataRow> playersData) {
+	public PlayerDeathDataTable(List<PlayerDeathDataRow> playersData) {
 		this.rows = playersData;
 	}
 	
-	public static PlayerDeathsDataTable create() {
-		return new PlayerDeathsDataTable(new ArrayList<PlayerDeathDataRow>());
+	public static PlayerDeathDataTable create() {
+		return new PlayerDeathDataTable(new ArrayList<PlayerDeathDataRow>());
 	}
 	
-    public static SavedData.Factory<PlayerDeathsDataTable> factory() {
-		return new SavedData.Factory<>(PlayerDeathsDataTable::new, PlayerDeathsDataTable::load, DataFixTypes.PLAYER);
+    public static SavedData.Factory<PlayerDeathDataTable> factory() {
+		return new SavedData.Factory<>(PlayerDeathDataTable::new, PlayerDeathDataTable::load, DataFixTypes.PLAYER);
 	}
 	
 	@Override
@@ -55,7 +55,7 @@ public final class PlayerDeathsDataTable extends SavedData {
 		return compoundTag;
 	}
 	
-	public static PlayerDeathsDataTable load(CompoundTag compoundTag) {
+	public static PlayerDeathDataTable load(CompoundTag compoundTag) {
 			
 		// Load list of NBTs from server data.
 		ListTag listTag = compoundTag.getList(KEY, Tag.TAG_COMPOUND);
@@ -74,7 +74,7 @@ public final class PlayerDeathsDataTable extends SavedData {
 		}
 		
 		// Create new instance of saved data class and provide data that was loaded to it.
-		return new PlayerDeathsDataTable(dataRows);
+		return new PlayerDeathDataTable(dataRows);
 	}
 	
 	public List<PlayerDeathDataRow> getRows(){

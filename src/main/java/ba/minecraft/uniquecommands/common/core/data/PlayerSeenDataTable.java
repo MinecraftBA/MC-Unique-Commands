@@ -10,26 +10,26 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
 
-public final class PlayersSeenSavedData extends SavedData {
+public final class PlayerSeenDataTable extends SavedData {
 
 	private static final String KEY = "Players";
 	
-	private final List<PlayerSeenData> playersDataTable;
+	private final List<PlayerSeenDataRow> dataRows;
 	
-	public PlayersSeenSavedData(List<PlayerSeenData> playersData) {
-		this.playersDataTable = playersData;
+	public PlayerSeenDataTable(List<PlayerSeenDataRow> dataRows) {
+		this.dataRows = dataRows;
 	}
 	
-	public PlayersSeenSavedData() {
-		this(new ArrayList<PlayerSeenData>());
+	public PlayerSeenDataTable() {
+		this(new ArrayList<PlayerSeenDataRow>());
 	}
 	
-	public static PlayersSeenSavedData create() {
-		return new PlayersSeenSavedData(new ArrayList<PlayerSeenData>());
+	public static PlayerSeenDataTable create() {
+		return new PlayerSeenDataTable(new ArrayList<PlayerSeenDataRow>());
 	}
 	
-    public static SavedData.Factory<PlayersSeenSavedData> factory() {
-		return new SavedData.Factory<>(PlayersSeenSavedData::new, PlayersSeenSavedData::load, DataFixTypes.PLAYER);
+    public static SavedData.Factory<PlayerSeenDataTable> factory() {
+		return new SavedData.Factory<>(PlayerSeenDataTable::new, PlayerSeenDataTable::load, DataFixTypes.PLAYER);
 	}
 	
 	@Override
@@ -39,10 +39,10 @@ public final class PlayersSeenSavedData extends SavedData {
 		ListTag listTag = new ListTag();
 		
 		// Iterate through all player data.
-		for(PlayerSeenData playerData : this.playersDataTable) {
+		for(PlayerSeenDataRow dataRow : this.dataRows) {
 			
 			// Serialize player data to NBT.
-			CompoundTag playerTag = playerData.serialize();
+			CompoundTag playerTag = dataRow.serialize();
 
 			// Add NBT to list.
 			listTag.add(playerTag);
@@ -55,36 +55,36 @@ public final class PlayersSeenSavedData extends SavedData {
 		return compoundTag;
 	}
 
-	public static PlayersSeenSavedData load(CompoundTag compoundTag) {
+	public static PlayerSeenDataTable load(CompoundTag compoundTag) {
 		
 		// Load list of NBTs from server data.
 		ListTag listTag = compoundTag.getList(KEY, Tag.TAG_COMPOUND);
 		
 		// Create new empty list that will hold all data.
-		ArrayList<PlayerSeenData> playersData = new ArrayList<PlayerSeenData>();
+		ArrayList<PlayerSeenDataRow> dataRows = new ArrayList<PlayerSeenDataRow>();
 		
 		// Iterate through all NBTs.
 		for(Tag tag : listTag) {
 			
 			// Deserialize NBT back to regular object.
-			PlayerSeenData playerData = PlayerSeenData.deserialize((CompoundTag)tag);
+			PlayerSeenDataRow dataRow = PlayerSeenDataRow.deserialize((CompoundTag)tag);
 			
 			// Add object to array of data.
-			playersData.add(playerData);
+			dataRows.add(dataRow);
 		}
 		
 		// Create new instance of saved data class and provide data that was loaded to it.
-		return new PlayersSeenSavedData(playersData);
+		return new PlayerSeenDataTable(dataRows);
 	}
 	
-	public List<PlayerSeenData> getPlayersData(){
-		return this.playersDataTable;
+	public List<PlayerSeenDataRow> getDataRows(){
+		return this.dataRows;
 	}
 	
-	public void upsertPlayerData(PlayerSeenData playerData) {
+	public void upsertPlayerData(PlayerSeenDataRow playerData) {
 
 		// Find existing log of player seen data based on username and UUID.
-		Optional<PlayerSeenData> searchResult = this.playersDataTable
+		Optional<PlayerSeenDataRow> searchResult = this.dataRows
 				.stream()
 				.filter($playerDataRow -> $playerDataRow.getPlayerName().contentEquals(playerData.getPlayerName()) && $playerDataRow.getPlayerId().equals(playerData.getPlayerId()))
 				.findFirst();
@@ -93,7 +93,7 @@ public final class PlayersSeenSavedData extends SavedData {
 		if(searchResult.isPresent()) {
 			
 			// Extract the log.
-			PlayerSeenData existing = searchResult.get();
+			PlayerSeenDataRow existing = searchResult.get();
 
 			// Change the log timestamp.
 			existing.setTimeStamp(playerData.getTimestamp());
@@ -101,7 +101,7 @@ public final class PlayersSeenSavedData extends SavedData {
 		} else {
 			
 			// Add new log.
-			this.playersDataTable.add(playerData);
+			this.dataRows.add(playerData);
 		}
 		
 		// Set data to be dirty as changes have been made.
