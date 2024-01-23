@@ -42,7 +42,7 @@ public final class WhereCommand {
 	
 	private static int displayCoordinates(CommandSourceStack source, String playerName) throws CommandSyntaxException {
 		
-		if(!UniqueCommandsModConfig.HOME_ENABLED) {
+		if(!UniqueCommandsModConfig.WHERE_ENABLED) {
 			// Create error message.
 			MutableComponent message = Component.literal(
 				"Command is not enabled. Hey, not my fault!"
