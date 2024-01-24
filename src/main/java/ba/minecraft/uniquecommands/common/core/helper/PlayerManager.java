@@ -201,7 +201,7 @@ public final class PlayerManager {
 		return searchResult;
 	}
 	
-	public static void saveLocationData(ServerPlayer player, String locName) {
+	public static BlockPos saveLocationData(ServerPlayer player, String locName) {
 
 		// Get position of lower player block.
 		BlockPos playerPos = player.blockPosition();
@@ -214,10 +214,10 @@ public final class PlayerManager {
 		// Get reference to personal persistent data of player.
 		CompoundTag data = player.getPersistentData();
 
-		// Create key => experimentalmod:home
-		String key = UniqueCommandsMod.MODID + ":home:" + locName;
+		// Create key => uniquecommands:home:{locName}
+		String key = getLocKey(locName);
 		
-		// Save array of coordinates in persistent data under key.
+		// Save array of coordinates in persistent data with key uniquecommands:home:{locName}:coords
 		data.putIntArray(key + ":coords", new int[] { x, y, z });
 		
 		// Get reference to level at which player is.
@@ -229,7 +229,13 @@ public final class PlayerManager {
 		// Get location of dimension resource.
 		ResourceLocation resLoc = dimension.location();
 		
-		// Save information about level.
+		// Save information about dimension in persistent data with key uniquecommands:home:{locName}:dim
 		data.putString(key + ":dim", resLoc.toString());
+		
+		return playerPos;
+	}
+	
+	private static String getLocKey(String locName) {
+		return UniqueCommandsMod.MODID + ":home:" + locName;
 	}
 }

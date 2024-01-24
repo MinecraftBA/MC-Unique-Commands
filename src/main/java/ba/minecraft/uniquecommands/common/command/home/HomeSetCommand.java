@@ -55,10 +55,7 @@ public final class HomeSetCommand {
 		ServerPlayer player = source.getPlayerOrException();
 		
 		// Save current location to player data.
-		PlayerManager.saveLocationData(player, locName);
-		
-		// Get position of lower player block.
-		BlockPos playerPos = player.blockPosition();
+		BlockPos playerPos = PlayerManager.saveLocationData(player, locName);
 		
 		// Get X, Y, Z coordinates of block position.
 		int x = playerPos.getX();
