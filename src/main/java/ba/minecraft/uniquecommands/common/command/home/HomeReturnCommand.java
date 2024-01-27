@@ -4,12 +4,12 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import ba.minecraft.uniquecommands.common.core.helper.LocationHelper;
+import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
+import ba.minecraft.uniquecommands.common.core.models.LocationData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.MinecraftServer;
@@ -55,18 +55,12 @@ public final class HomeReturnCommand {
 		}
 		// Get reference to player that has typed the command.
 		ServerPlayer player = source.getPlayerOrException();
+
+		// Load location data from player persistance data.
+		LocationData location = PlayerManager.loadLocationData(player,  locName);
 		
-		// Get reference to personal persistent data of player.
-		CompoundTag data = player.getPersistentData();
-		
-		// Create key => experimentalmod:home
-		String key = UniqueCommandsMod.MODID + ":home:" + locName;
-		
-		// Retrieve coordinates by providing key to persistent data.
-		int[] coordinates = data.getIntArray(key + ":coords");
-		
-		// IF: Coordinates were not saved previously.
-		if (coordinates.length == 0) {
+		// IF: Location could not be determined.
+		if (location == null) {
 			
 			// Create error message.
 			MutableComponent message = Component.literal(
@@ -80,32 +74,24 @@ public final class HomeReturnCommand {
 			return -1;
 		}
 		
-		// Extract coordinates from array.
-		int x = coordinates[0];
-		int y = coordinates[1];
-		int z = coordinates[2];
-		
-		// Get ID of resource location for dimension.
-		String resLocId = data.getString(key + ":dim");
-
 		// Get reference to server where code is running.
 		MinecraftServer server = player.getServer();
 
 		// Get server level based on its resource identifier.
-		ServerLevel level = LocationHelper.getLevel(server, resLocId);
+		ServerLevel level = LocationHelper.getLevel(server, location.getDimensionResId());
 
 		float yaw = player.getYRot();
 		float pitch = player.getXRot();
 		
 		// Teleport player to coordinates.
-		player.teleportTo(level, x, y, z, yaw, pitch);
+		player.teleportTo(level, location.getX(), location.getY(), location.getZ(), yaw, pitch);
 		
 		// Send confirmation message.
 		source.sendSuccess(() -> {
 
 			// Create success message.
 			MutableComponent message = Component.literal(
-				"Returned to home " + locName + ": " + x + " " + y + " " + z + ""
+				"Returned to home " + locName + ": " + location.getX() + " " + location.getY() + " " + location.getZ() + ""
 			);
 			
 			return message;

@@ -29,8 +29,7 @@ public final class PlayerManager {
 
 	private static final String SEENS_KEY = "seens";
 	private static final String DEATHS_KEY = "deaths";
-	private static final String ACCOUNTS_KEY = "accounts";
-
+	
 	private static final Map<UUID, Long> teleports = 
 			new HashMap<UUID, Long>();
 	
@@ -208,7 +207,7 @@ public final class PlayerManager {
 		CompoundTag data = player.getPersistentData();
 
 		// Get current location information for player.
-		LocationData location = LocationHelper.getLocation(player);
+		LocationData location = LocationHelper.getPlayerLocation(player);
 
 		// Create key => uniquecommands:home:{locName}
 		String key = getLocKey(locName);
@@ -221,6 +220,42 @@ public final class PlayerManager {
 		
 		return location;
 	}
+	
+	public static LocationData loadLocationData(ServerPlayer player, String locName) {
+
+		// Get reference to personal persistent data of player.
+		CompoundTag data = player.getPersistentData();
+
+		// Create key => uniquecommands:home:{locName}
+		String key = getLocKey(locName);
+
+		// Retrieve coordinates by providing key to persistent data.
+		int[] coordinates = data.getIntArray(key + ":coords");
+
+		// IF: Coordinates were not saved previously.
+		if (coordinates.length == 0) {
+			
+			// Exit as location does not exist.
+			return null;
+		}
+		
+		// Extract coordinates from array.
+		int x = coordinates[0];
+		int y = coordinates[1];
+		int z = coordinates[2];
+
+		// Create block position from coordinates.
+		BlockPos blockPos = new BlockPos(x, y, z);
+
+		// Get ID of resource location for dimension.
+		String dimensionResId = data.getString(key + ":dim");
+
+		// Create new location.
+		LocationData location = new LocationData(blockPos, dimensionResId);
+		
+		return location;
+	}
+	
 	
 	private static String getLocKey(String locName) {
 		return UniqueCommandsMod.MODID + ":home:" + locName;

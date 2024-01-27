@@ -9,7 +9,6 @@ import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
 import ba.minecraft.uniquecommands.common.core.models.LocationData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -52,6 +51,7 @@ public final class HomeSetCommand {
 
 			return -1;
 		}
+		
 		// Get reference to player that has typed the command.
 		ServerPlayer player = source.getPlayerOrException();
 		

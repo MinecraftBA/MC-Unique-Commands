@@ -15,18 +15,18 @@ public final class LocationHelper {
 	public static ServerLevel getLevel(MinecraftServer server, String dimensionResId) {
 		
 		// Create resource location based on resource ID.
-		ResourceLocation resLoc = new ResourceLocation(dimensionResId);
+		ResourceLocation dimensionResLoc = new ResourceLocation(dimensionResId);
 		
 		// Get resource key for dimension.
-		ResourceKey<Level> resKey = ResourceKey.create(Registries.DIMENSION, resLoc);
+		ResourceKey<Level> dimensionResKey = ResourceKey.create(Registries.DIMENSION, dimensionResLoc);
 
 		// Get reference to level that matches resource key.
-		ServerLevel level = server.getLevel(resKey);
+		ServerLevel level = server.getLevel(dimensionResKey);
 		
 		return level;
 	}
 	
-	public static LocationData getLocation(ServerPlayer player) 
+	public static LocationData getPlayerLocation(ServerPlayer player) 
 	{
 		// Get position of lower player block.
 		BlockPos playerPos = player.blockPosition();
