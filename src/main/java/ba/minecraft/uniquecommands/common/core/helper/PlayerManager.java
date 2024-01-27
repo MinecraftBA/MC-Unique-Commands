@@ -201,16 +201,39 @@ public final class PlayerManager {
 		return searchResult;
 	}
 	
-	public static LocationData saveLocationData(ServerPlayer player, String locName) {
+	public static LocationData getPlayerLocation(ServerPlayer player) 
+	{
+		// Get position of lower player block.
+		BlockPos playerPos = player.blockPosition();
+		
+		// Get reference to level at which player is.
+		ServerLevel level = player.serverLevel();
+		
+		// Get resource key for the dimension of level.
+		ResourceKey<Level> dimension = level.dimension();
+		
+		// Get location of dimension resource.
+		ResourceLocation dimensionResLoc = dimension.location();
+
+		// Get dimension resource location identifier.
+		String dimensionResId = dimensionResLoc.toString();
+		
+		// Create location instance.
+		LocationData location = new LocationData(playerPos, dimensionResId);
+
+		return location;
+	}
+	
+	public static LocationData saveLocationData(ServerPlayer player, String locGroup, String locName) {
 
 		// Get reference to personal persistent data of player.
 		CompoundTag data = player.getPersistentData();
 
 		// Get current location information for player.
-		LocationData location = LocationHelper.getPlayerLocation(player);
+		LocationData location = getPlayerLocation(player);
 
 		// Create key => uniquecommands:home:{locName}
-		String key = getLocKey(locName);
+		String key = getLocKey(locGroup, locName);
 		
 		// Save array of coordinates in persistent data with key uniquecommands:home:{locName}:coords
 		data.putIntArray(key + ":coords", location.getCoords());
@@ -221,13 +244,13 @@ public final class PlayerManager {
 		return location;
 	}
 	
-	public static LocationData loadLocationData(ServerPlayer player, String locName) {
+	public static LocationData loadLocationData(ServerPlayer player, String locGroup, String locName) {
 
 		// Get reference to personal persistent data of player.
 		CompoundTag data = player.getPersistentData();
 
 		// Create key => uniquecommands:home:{locName}
-		String key = getLocKey(locName);
+		String key = getLocKey(locGroup, locName);
 
 		// Retrieve coordinates by providing key to persistent data.
 		int[] coordinates = data.getIntArray(key + ":coords");
@@ -257,7 +280,7 @@ public final class PlayerManager {
 	}
 	
 	
-	private static String getLocKey(String locName) {
-		return UniqueCommandsMod.MODID + ":home:" + locName;
+	private static String getLocKey(String locGroup, String locName) {
+		return UniqueCommandsMod.MODID + ":" + locGroup + ":" + locName;
 	}
 }

@@ -25,27 +25,4 @@ public final class LocationHelper {
 		
 		return level;
 	}
-	
-	public static LocationData getPlayerLocation(ServerPlayer player) 
-	{
-		// Get position of lower player block.
-		BlockPos playerPos = player.blockPosition();
-		
-		// Get reference to level at which player is.
-		ServerLevel level = player.serverLevel();
-		
-		// Get resource key for the dimension of level.
-		ResourceKey<Level> dimension = level.dimension();
-		
-		// Get location of dimension resource.
-		ResourceLocation dimensionResLoc = dimension.location();
-
-		// Get dimension resource location identifier.
-		String dimensionResId = dimensionResLoc.toString();
-		
-		// Create location instance.
-		LocationData location = new LocationData(playerPos, dimensionResId);
-
-		return location;
-	}
 }

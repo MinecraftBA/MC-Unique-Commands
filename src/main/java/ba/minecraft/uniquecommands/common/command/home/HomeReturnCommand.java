@@ -57,7 +57,7 @@ public final class HomeReturnCommand {
 		ServerPlayer player = source.getPlayerOrException();
 
 		// Load location data from player persistance data.
-		LocationData location = PlayerManager.loadLocationData(player,  locName);
+		LocationData location = PlayerManager.loadLocationData(player, "home",  locName);
 		
 		// IF: Location could not be determined.
 		if (location == null) {

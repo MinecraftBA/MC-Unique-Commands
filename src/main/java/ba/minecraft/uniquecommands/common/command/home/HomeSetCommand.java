@@ -56,7 +56,7 @@ public final class HomeSetCommand {
 		ServerPlayer player = source.getPlayerOrException();
 		
 		// Save current location to player data.
-		LocationData location = PlayerManager.saveLocationData(player, locName);
+		LocationData location = PlayerManager.saveLocationData(player, "home", locName);
 
 		// Create message to be displayed in console.		
 		MutableComponent message = Component.literal(
