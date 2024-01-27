@@ -1,5 +1,6 @@
 package ba.minecraft.uniquecommands.common.event.command;
 
+import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import com.mojang.brigadier.ImmutableStringReader;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -13,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -27,6 +29,13 @@ public final class AccountEventHandler {
 		if(ServerHelper.isOnlineMode()) {
 			
 			// Do nothing. Account management is only for offline servers.
+			return;
+		}
+		
+		// IF: Account management is not enabled.
+		if(!UniqueCommandsModConfig.ACCOUNTS_ENABLED) {
+			
+			// Do nothing.
 			return;
 		}
 
@@ -58,7 +67,15 @@ public final class AccountEventHandler {
 		// Split command to segments.
 		String[] segments = commandString.split("\\s+");
 		
+		// IF: Command is not login.
 		if(segments[0] != "login") {
+			
+			// IF: Player was not logged in.
+			if(!PlayerManager.isLoggedIn(player)) {
+				
+				// Stop execution of command.
+				event.setCanceled(true);
+			}
 			
 		}
 	}
@@ -73,6 +90,13 @@ public final class AccountEventHandler {
 			return;
 		}
 		
+		// IF: Account management is not enabled.
+		if(!UniqueCommandsModConfig.ACCOUNTS_ENABLED) {
+			
+			// Do nothing.
+			return;
+		}
+
 		// Get reference to player.
 		Player entity = event.getEntity();
 		
@@ -100,5 +124,42 @@ public final class AccountEventHandler {
 		}
 		
 		
+	}
+	
+	@SubscribeEvent()
+	public static void onPlayerLoggedOut(final PlayerLoggedOutEvent event) {
+
+		// IF: Server is running in online mode.
+		if(ServerHelper.isOnlineMode()) {
+			
+			// Do nothing. Account management is for offline servers only.
+			return;
+		}
+		
+		// IF: Account management is not enabled.
+		if(!UniqueCommandsModConfig.ACCOUNTS_ENABLED) {
+			
+			// Do nothing.
+			return;
+		}
+
+		// Get reference to player.
+		Player entity = event.getEntity();
+		
+		// Get reference to a level where code is executing.
+		Level level = entity.level();
+		
+		// IF: Code is executing on client side.
+		if(level.isClientSide())
+		{
+			// Do nothing.
+			return;
+		}
+		
+		// Cast entity to server player.
+		ServerPlayer player = (ServerPlayer)entity;
+		
+		// Set login status to false.
+		PlayerManager.setLoggedInStatus(player, false);
 	}
 }

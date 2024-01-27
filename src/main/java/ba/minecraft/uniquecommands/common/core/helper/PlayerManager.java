@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -36,6 +37,8 @@ public final class PlayerManager {
 	private static final Map<UUID, Long> teleports = 
 			new HashMap<UUID, Long>();
 	
+    private static final ConcurrentHashMap<UUID, Boolean> activeLogins = new ConcurrentHashMap<>();
+    
 	public static void setTeleportTimestamp(UUID playerId) {
 		teleports.put(playerId, LocalDateTime.now().toEpochSecond(OffsetDateTime.now().getOffset()));
 	}
@@ -308,6 +311,31 @@ public final class PlayerManager {
 		String passwordHash = data.getString("password");
 		
 		return passwordHash;
+	}
+	
+	public static void setLoggedInStatus(ServerPlayer player, Boolean isLoggedIn) {
+
+		// Get unique identifier of player.
+		UUID playerId = player.getUUID();
+
+		// Set logged in status.
+		activeLogins.put(playerId, isLoggedIn);
+	}
+	
+	public static Boolean isLoggedIn(ServerPlayer player) {
+		
+		// Get unique identifier of player.
+		UUID playerId = player.getUUID();
+		
+		// IF: Player was not registered in active logins.
+		if(!activeLogins.containsKey(playerId)) {
+			return false;
+		}
+		
+		// Get login 
+		Boolean isLoggedIn = activeLogins.get(playerId);
+
+		return isLoggedIn;
 	}
 	
 }
