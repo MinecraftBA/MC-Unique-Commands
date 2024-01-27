@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 public final class PlayerLoggedInEventHandler {
 
 	@SubscribeEvent()
-	public static void onPlayerLoggedOut(final PlayerLoggedInEvent event) {
+	public static void onPlayerLoggedIn(final PlayerLoggedInEvent event) {
 		
 		// Get reference to player.
 		Player player = event.getEntity();
