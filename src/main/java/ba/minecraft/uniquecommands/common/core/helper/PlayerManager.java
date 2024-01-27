@@ -14,6 +14,7 @@ import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataRow;
 import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataRow;
 import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataTable;
 import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataTable;
+import ba.minecraft.uniquecommands.common.core.models.LocationData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -201,38 +202,24 @@ public final class PlayerManager {
 		return searchResult;
 	}
 	
-	public static BlockPos saveLocationData(ServerPlayer player, String locName) {
+	public static LocationData saveLocationData(ServerPlayer player, String locName) {
 
-		// Get position of lower player block.
-		BlockPos playerPos = player.blockPosition();
-		
-		// Get X, Y, Z coordinates of block position.
-		int x = playerPos.getX();
-		int y = playerPos.getY();
-		int z = playerPos.getZ();
-		
 		// Get reference to personal persistent data of player.
 		CompoundTag data = player.getPersistentData();
+
+		// Get current location information for player.
+		LocationData location = LocationHelper.getLocation(player);
 
 		// Create key => uniquecommands:home:{locName}
 		String key = getLocKey(locName);
 		
 		// Save array of coordinates in persistent data with key uniquecommands:home:{locName}:coords
-		data.putIntArray(key + ":coords", new int[] { x, y, z });
-		
-		// Get reference to level at which player is.
-		ServerLevel level = player.serverLevel();
-		
-		// Get resource key for the dimension of level.
-		ResourceKey<Level> dimension = level.dimension();
-		
-		// Get location of dimension resource.
-		ResourceLocation resLoc = dimension.location();
+		data.putIntArray(key + ":coords", location.getCoords());
 		
 		// Save information about dimension in persistent data with key uniquecommands:home:{locName}:dim
-		data.putString(key + ":dim", resLoc.toString());
+		data.putString(key + ":dim", location.getDimensionResId());
 		
-		return playerPos;
+		return location;
 	}
 	
 	private static String getLocKey(String locName) {

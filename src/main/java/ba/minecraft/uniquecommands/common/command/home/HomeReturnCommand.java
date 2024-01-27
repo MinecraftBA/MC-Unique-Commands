@@ -6,7 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
-import ba.minecraft.uniquecommands.common.core.helper.ServerHelper;
+import ba.minecraft.uniquecommands.common.core.helper.LocationHelper;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.nbt.CompoundTag;
@@ -92,7 +92,7 @@ public final class HomeReturnCommand {
 		MinecraftServer server = player.getServer();
 
 		// Get server level based on its resource identifier.
-		ServerLevel level = ServerHelper.getLevel(server, resLocId);
+		ServerLevel level = LocationHelper.getLevel(server, resLocId);
 
 		float yaw = player.getYRot();
 		float pitch = player.getXRot();
