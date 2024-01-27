@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.mindrot.jbcrypt.BCrypt;
+
 import com.mojang.authlib.GameProfile;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
@@ -278,9 +281,33 @@ public final class PlayerManager {
 		
 		return location;
 	}
-	
-	
+
 	private static String getLocKey(String locGroup, String locName) {
 		return UniqueCommandsMod.MODID + ":" + locGroup + ":" + locName;
 	}
+	
+	public static void savePassword(ServerPlayer player, String password) {
+
+		// Get reference to personal persistent data of player.
+		CompoundTag data = player.getPersistentData();
+
+		// GEnerate password hash.
+		String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
+		
+		// Save player designated password.
+		data.putString("password", passwordHash);
+
+	}
+	
+	public static String loadPassword(ServerPlayer player) {
+
+		// Get reference to personal persistent data of player.
+		CompoundTag data = player.getPersistentData();
+
+		// Load password hash.
+		String passwordHash = data.getString("password");
+		
+		return passwordHash;
+	}
+	
 }

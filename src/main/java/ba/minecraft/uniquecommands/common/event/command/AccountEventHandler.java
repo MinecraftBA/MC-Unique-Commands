@@ -1,6 +1,5 @@
 package ba.minecraft.uniquecommands.common.event.command;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.ImmutableStringReader;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -11,6 +10,7 @@ import ba.minecraft.uniquecommands.common.core.helper.ServerHelper;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -26,7 +26,7 @@ public final class AccountEventHandler {
 		// IF: Server is running in online mode.
 		if(ServerHelper.isOnlineMode()) {
 			
-			// Do nothing.
+			// Do nothing. Account management is only for offline servers.
 			return;
 		}
 
@@ -69,14 +69,36 @@ public final class AccountEventHandler {
 		// IF: Server is running in online mode.
 		if(ServerHelper.isOnlineMode()) {
 			
-			// Do nothing.
+			// Do nothing. Account management is for offline servers only.
 			return;
 		}
 		
 		// Get reference to player.
-		Player player = event.getEntity();
+		Player entity = event.getEntity();
 		
+		// Get reference to a level where code is executing.
+		Level level = entity.level();
 		
+		// IF: Code is executing on client side.
+		if(level.isClientSide())
+		{
+			// Do nothing.
+			return;
+		}
+		
+		// Cast entity to server player.
+		ServerPlayer player = (ServerPlayer)entity;
 
+		// Get password hash.
+		String passwordHash = PlayerManager.loadPassword(player);
+		
+		if(passwordHash == null || passwordHash == "") {
+			// TODO: Add code here that asks player to set password for the first time.
+		} else {
+			// TODO: Add code here that requires player to login.
+			// Check if player was previously logged in.
+		}
+		
+		
 	}
 }

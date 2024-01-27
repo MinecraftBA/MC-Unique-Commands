@@ -15,6 +15,7 @@ public final class UniqueCommandsModConfig {
     private static final ForgeConfigSpec.IntValue MAX_FAILED_LOGINS_CONFIG;
     private static final ForgeConfigSpec.IntValue LOGIN_TIMEOUT_DURATION_CONFIG;
     private static final ForgeConfigSpec.IntValue REGISTRATION_TIMEOUT_DURATION_CONFIG;
+    private static final ForgeConfigSpec.IntValue MIN_PASSWORD_LENGTH_CONFIG;
 
     private static final ForgeConfigSpec.BooleanValue DIE_ENABLED_CONFIG;
     private static final ForgeConfigSpec.IntValue DIE_OP_LEVEL_CONFIG;
@@ -41,6 +42,7 @@ public final class UniqueCommandsModConfig {
     public static int MAX_FAILED_LOGINS;
     public static int LOGIN_TIMEOUT_DURATION;
     public static int REGISTRATION_TIMEOUT_DURATION;
+    public static int MIN_PASSWORD_LENGTH;
 
     public static Boolean DIE_ENABLED;
     public static int DIE_OP_LEVEL;
@@ -78,6 +80,9 @@ public final class UniqueCommandsModConfig {
     	REGISTRATION_TIMEOUT_DURATION_CONFIG = BUILDER.comment("Defines the maximum available time for the player to register before he/she is kicked from the server.")
 	            .defineInRange("Registration timeout duration", 15, 5, 60);
 
+    	MIN_PASSWORD_LENGTH_CONFIG = BUILDER.comment("Defines the minimum length for the password.")
+	            .defineInRange("Password minimum length", 6, 6, 16);
+    	
     	DIE_ENABLED_CONFIG = BUILDER.comment("Defines whether /die command is enabled.")
 	            .define("Die enabled", true);
 
@@ -132,6 +137,7 @@ public final class UniqueCommandsModConfig {
     	MAX_FAILED_LOGINS = MAX_FAILED_LOGINS_CONFIG.get();
     	LOGIN_TIMEOUT_DURATION = LOGIN_TIMEOUT_DURATION_CONFIG.get();
     	REGISTRATION_TIMEOUT_DURATION = REGISTRATION_TIMEOUT_DURATION_CONFIG.get();
+    	MIN_PASSWORD_LENGTH = MIN_PASSWORD_LENGTH_CONFIG.get();
     	
     	DIE_ENABLED = DIE_ENABLED_CONFIG.get();
     	DIE_OP_LEVEL = DIE_OP_LEVEL_CONFIG.get();
