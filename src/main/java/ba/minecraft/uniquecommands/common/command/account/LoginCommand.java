@@ -4,8 +4,12 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerPlayer;
 
 public final class LoginCommand {
 
@@ -27,6 +31,24 @@ public final class LoginCommand {
 	}
 	
 	private static int login(CommandSourceStack source, String password) throws CommandSyntaxException {
+
+		// IF: Accounts are not enabled.
+		if(!UniqueCommandsModConfig.ACCOUNTS_ENABLED) {
+			// Create error message.
+			MutableComponent message = Component.literal(
+				"Command is not enabled. Hey, not my fault!"
+			);
+				
+			// Send error message.
+			source.sendFailure(message);
+
+			return -1;
+		}
+		
+		// Get reference to player that has typed the command.
+		ServerPlayer player = source.getPlayerOrException();
+
+		
 		
 		// Indicate success (1 = true).
 		return 1;
