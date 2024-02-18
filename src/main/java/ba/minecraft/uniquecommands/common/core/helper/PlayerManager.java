@@ -238,13 +238,13 @@ public final class PlayerManager {
 		// Get current location information for player.
 		LocationData location = getPlayerLocation(player);
 
-		// Create key => uniquecommands:home:{locName}
+		// Create key => uniquecommands:{locGroup}:{locName}
 		String key = getLocKey(locGroup, locName);
 		
-		// Save array of coordinates in persistent data with key uniquecommands:home:{locName}:coords
+		// Save array of coordinates in persistent data with key uniquecommands:{locGroup}:{locName}:coords
 		data.putIntArray(key + ":coords", location.getCoords());
 		
-		// Save information about dimension in persistent data with key uniquecommands:home:{locName}:dim
+		// Save information about dimension in persistent data with key uniquecommands:{locGroup}:{locName}:dim
 		data.putString(key + ":dim", location.getDimensionResId());
 		
 		return location;
@@ -255,7 +255,7 @@ public final class PlayerManager {
 		// Get reference to personal persistent data of player.
 		CompoundTag data = player.getPersistentData();
 
-		// Create key => uniquecommands:home:{locName}
+		// Create key => uniquecommands:{locGroup}:{locName}
 		String key = getLocKey(locGroup, locName);
 
 		// Retrieve coordinates by providing key to persistent data.
@@ -311,6 +311,13 @@ public final class PlayerManager {
 		String passwordHash = data.getString("password");
 		
 		return passwordHash;
+	}
+	
+	public static boolean verifyPassword(ServerPlayer player, String password) {
+		
+		String passwordHash = loadPassword(player);
+		
+		return BCrypt.checkpw(password, passwordHash);
 	}
 	
 	public static void setLoggedInStatus(ServerPlayer player, Boolean isLoggedIn) {

@@ -6,6 +6,7 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 public final class ServerHelper {
 
 	public static boolean isOnlineMode() {
+		
 	    // Get the current Minecraft server instance
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 

@@ -5,6 +5,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
+import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
+import ba.minecraft.uniquecommands.common.core.helper.ServerHelper;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -45,10 +47,36 @@ public final class LoginCommand {
 			return -1;
 		}
 		
+		// IF: Server is running in online mode.
+		if(ServerHelper.isOnlineMode()) {
+
+			// Create error message.
+			MutableComponent message = Component.literal(
+				"Server is running in online mode, login is not required!"
+			);
+				
+			// Send error message.
+			source.sendFailure(message);
+
+			return -1;
+
+		}
+		
 		// Get reference to player that has typed the command.
 		ServerPlayer player = source.getPlayerOrException();
-
 		
+		// IF: Player is already logged in.
+		if(PlayerManager.isLoggedIn(player)) {
+			// Create error message.
+			MutableComponent message = Component.literal(
+				"You are already logged in!"
+			);
+				
+			// Send error message.
+			source.sendFailure(message);
+
+			return -1;
+		}
 		
 		// Indicate success (1 = true).
 		return 1;
