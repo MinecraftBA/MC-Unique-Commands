@@ -7,6 +7,10 @@ public final class ServerHelper {
 
 	public static boolean isOnlineMode() {
 		
+		if(true) {
+			return false;
+		}
+		
 	    // Get the current Minecraft server instance
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 
@@ -15,7 +19,7 @@ public final class ServerHelper {
             return server.usesAuthentication();
         }
 
-        // Default to false if server instance is not available
+         // Default to false if server instance is not available
         return false;
 	}
 }

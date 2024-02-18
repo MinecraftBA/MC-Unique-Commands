@@ -6,6 +6,7 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.context.CommandContextBuilder;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
+import ba.minecraft.uniquecommands.common.core.helper.ChatHelper;
 import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
 import ba.minecraft.uniquecommands.common.core.helper.ServerHelper;
 import net.minecraft.commands.CommandSourceStack;
@@ -117,13 +118,18 @@ public final class AccountEventHandler {
 		String passwordHash = PlayerManager.loadPassword(player);
 		
 		if(passwordHash == null || passwordHash == "") {
-			// TODO: Add code here that asks player to set password for the first time.
+			
+			ChatHelper.sendWarningMessage(player, "To play on this server, you need to create an account.");
+			ChatHelper.sendWarningMessage(player, "Please set your password with command: /login your_password");
+			ChatHelper.sendWarningMessage(player, "You have 30 seconds to set the password.");
+			ChatHelper.sendWarningMessage(player, "Make sure to write your password down and to keep it safe!");
+
 		} else {
-			// TODO: Add code here that requires player to login.
-			// Check if player was previously logged in.
+
+			ChatHelper.sendWarningMessage(player, "Please login with command: /login your_password");
+			ChatHelper.sendWarningMessage(player, "You have 30 seconds to complete your login!");
+		
 		}
-		
-		
 	}
 	
 	@SubscribeEvent()

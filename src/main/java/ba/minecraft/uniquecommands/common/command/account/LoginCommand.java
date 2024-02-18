@@ -67,6 +67,7 @@ public final class LoginCommand {
 		
 		// IF: Player is already logged in.
 		if(PlayerManager.isLoggedIn(player)) {
+
 			// Create error message.
 			MutableComponent message = Component.literal(
 				"You are already logged in!"

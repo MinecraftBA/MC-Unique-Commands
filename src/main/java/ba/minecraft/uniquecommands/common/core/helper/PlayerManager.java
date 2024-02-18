@@ -315,8 +315,10 @@ public final class PlayerManager {
 	
 	public static boolean verifyPassword(ServerPlayer player, String password) {
 		
+		// Load existing password.
 		String passwordHash = loadPassword(player);
 		
+		// 
 		return BCrypt.checkpw(password, passwordHash);
 	}
 	
