@@ -184,6 +184,7 @@ public final class AccountEventHandler {
 	@SubscribeEvent()
 	public static void onPlayerTick(final PlayerTickEvent event) {
 
+		
 		// IF: Event was fired on client side.
 		if(event.side == LogicalSide.CLIENT) {
 			return;
@@ -207,8 +208,6 @@ public final class AccountEventHandler {
 		// Get game mode for player.
 		ServerPlayerGameMode gameMode = player.gameMode;
 
-		if(gameMode. %20 != 0) {
-			
-		}
+		// Incomplete
 	}
 }
