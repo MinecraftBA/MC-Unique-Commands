@@ -19,6 +19,7 @@ import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataRow;
 import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataTable;
 import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataTable;
 import ba.minecraft.uniquecommands.common.core.models.LocationData;
+import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -38,6 +39,7 @@ public final class PlayerManager {
 			new HashMap<UUID, Long>();
 	
     private static final ConcurrentHashMap<UUID, Boolean> activeLogins = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<UUID, Integer> activeCounters = new ConcurrentHashMap<>();
     
 	public static void setTeleportTimestamp(UUID playerId) {
 		teleports.put(playerId, LocalDateTime.now().toEpochSecond(OffsetDateTime.now().getOffset()));
@@ -347,4 +349,12 @@ public final class PlayerManager {
 		return isLoggedIn;
 	}
 	
+	public static void startCounter(ServerPlayer player) {
+		
+		// Get unique identifier of player.
+		UUID playerId = player.getUUID();
+
+		// Set counter value to maximum.
+		activeCounters.put(playerId, UniqueCommandsModConfig.LOGIN_TIMEOUT_DURATION);
+	}
 }

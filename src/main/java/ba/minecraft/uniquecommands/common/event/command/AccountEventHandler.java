@@ -11,12 +11,16 @@ import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
 import ba.minecraft.uniquecommands.common.core.helper.ServerHelper;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.CommandEvent;
+import net.minecraftforge.event.TickEvent.PlayerTickEvent;
+import net.minecraftforge.event.TickEvent.ServerTickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 
@@ -117,6 +121,7 @@ public final class AccountEventHandler {
 		// Get password hash.
 		String passwordHash = PlayerManager.loadPassword(player);
 		
+		// IF: Password was not set previously - it's a new player.
 		if(passwordHash == null || passwordHash == "") {
 			
 			ChatHelper.sendWarningMessage(player, "To play on this server, you need to create an account.");
@@ -124,12 +129,19 @@ public final class AccountEventHandler {
 			ChatHelper.sendWarningMessage(player, "You have 30 seconds to set the password.");
 			ChatHelper.sendWarningMessage(player, "Make sure to write your password down and to keep it safe!");
 
+			
 		} else {
 
 			ChatHelper.sendWarningMessage(player, "Please login with command: /login your_password");
 			ChatHelper.sendWarningMessage(player, "You have 30 seconds to complete your login!");
 		
 		}
+
+		// Clear login status to false.
+		PlayerManager.setLoggedInStatus(player, false);
+
+		// Start login timeout counter for player.
+		PlayerManager.startCounter(player);
 	}
 	
 	@SubscribeEvent()
@@ -167,5 +179,36 @@ public final class AccountEventHandler {
 		
 		// Set login status to false.
 		PlayerManager.setLoggedInStatus(player, false);
+	}
+	
+	@SubscribeEvent()
+	public static void onPlayerTick(final PlayerTickEvent event) {
+
+		// IF: Event was fired on client side.
+		if(event.side == LogicalSide.CLIENT) {
+			return;
+		}
+
+		// IF: Server is running in online mode.
+		if(ServerHelper.isOnlineMode()) {
+			return;
+		}
+		
+		// Get reference to player and cast it as ServerPlayer.
+		ServerPlayer player = (ServerPlayer)event.player;
+		
+		// IF: Player is already logged in,
+		if(PlayerManager.isLoggedIn(player)) {
+
+			// Do nothing.
+			return;
+		}
+		
+		// Get game mode for player.
+		ServerPlayerGameMode gameMode = player.gameMode;
+
+		if(gameMode. %20 != 0) {
+			
+		}
 	}
 }
