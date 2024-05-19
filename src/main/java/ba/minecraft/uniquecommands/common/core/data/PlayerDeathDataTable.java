@@ -33,7 +33,7 @@ public final class PlayerDeathDataTable extends SavedData {
 		return new SavedData.Factory<>(PlayerDeathDataTable::new, PlayerDeathDataTable::load, DataFixTypes.PLAYER);
 	}
 	
-	public static PlayerDeathDataTable load(CompoundTag compoundTag) {
+	public static PlayerDeathDataTable load(CompoundTag compoundTag, Provider provider) {
 			
 		// Load list of NBTs from server data.
 		ListTag listTag = compoundTag.getList(KEY, Tag.TAG_COMPOUND);

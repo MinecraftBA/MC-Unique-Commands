@@ -33,7 +33,7 @@ public final class PlayerSeenDataTable extends SavedData {
 		return new SavedData.Factory<>(PlayerSeenDataTable::new, PlayerSeenDataTable::load, DataFixTypes.PLAYER);
 	}
 	
-	public static PlayerSeenDataTable load(CompoundTag compoundTag) {
+	public static PlayerSeenDataTable load(CompoundTag compoundTag, Provider provider) {
 		
 		// Load list of NBTs from server data.
 		ListTag listTag = compoundTag.getList(KEY, Tag.TAG_COMPOUND);

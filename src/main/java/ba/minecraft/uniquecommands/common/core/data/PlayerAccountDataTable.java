@@ -32,7 +32,7 @@ public final class PlayerAccountDataTable extends SavedData {
 		return new SavedData.Factory<>(PlayerAccountDataTable::new, PlayerAccountDataTable::load, DataFixTypes.PLAYER);
 	}
     
-	public static PlayerAccountDataTable load(CompoundTag compoundTag) {
+	public static PlayerAccountDataTable load(CompoundTag compoundTag, Provider provider) {
 		
 		// Load list of NBTs from server data.
 		ListTag listTag = compoundTag.getList(KEY, Tag.TAG_COMPOUND);
