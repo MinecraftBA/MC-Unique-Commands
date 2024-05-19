@@ -54,7 +54,7 @@ public final class RollCommand {
 		RandomSource random = level.getRandom();
 		
 		// Create random roll.
-		int roll = random.nextInt(maxValue);
+		int roll = random.nextInt(maxValue) + 1;
 
 		// Get reference to a player that has typed the command.
 		ServerPlayer player = source.getPlayerOrException();
