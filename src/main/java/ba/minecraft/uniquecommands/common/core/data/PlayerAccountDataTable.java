@@ -3,6 +3,7 @@ package ba.minecraft.uniquecommands.common.core.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -31,29 +32,6 @@ public final class PlayerAccountDataTable extends SavedData {
 		return new SavedData.Factory<>(PlayerAccountDataTable::new, PlayerAccountDataTable::load, DataFixTypes.PLAYER);
 	}
     
-	@Override
-	public CompoundTag save(CompoundTag compoundTag) {
-		
-		// Create new NBT list.
-		ListTag listTag = new ListTag();
-		
-		// Iterate through all player data.
-		for(PlayerAccountDataRow dataRow : this.dataRows) {
-			
-			// Serialize player data to NBT.
-			CompoundTag playerTag = dataRow.serialize();
-
-			// Add NBT to list.
-			listTag.add(playerTag);
-		}
-
-		// Store all NBTs to server data.
-		compoundTag.put(KEY, listTag);
-
-		// Return server data back for further processing.
-		return compoundTag;
-	}
-	
 	public static PlayerAccountDataTable load(CompoundTag compoundTag) {
 		
 		// Load list of NBTs from server data.
@@ -78,5 +56,26 @@ public final class PlayerAccountDataTable extends SavedData {
 	
 	public List<PlayerAccountDataRow> getPlayersData(){
 		return this.dataRows;
+	}
+
+	@Override
+	public CompoundTag save(CompoundTag compoundTag, Provider pRegistries) {
+		ListTag listTag = new ListTag();
+		
+		// Iterate through all player data.
+		for(PlayerAccountDataRow dataRow : this.dataRows) {
+			
+			// Serialize player data to NBT.
+			CompoundTag playerTag = dataRow.serialize();
+
+			// Add NBT to list.
+			listTag.add(playerTag);
+		}
+
+		// Store all NBTs to server data.
+		compoundTag.put(KEY, listTag);
+
+		// Return server data back for further processing.
+		return compoundTag;
 	}
 }

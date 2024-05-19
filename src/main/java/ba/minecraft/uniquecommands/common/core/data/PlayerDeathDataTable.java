@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -30,29 +31,6 @@ public final class PlayerDeathDataTable extends SavedData {
 	
     public static SavedData.Factory<PlayerDeathDataTable> factory() {
 		return new SavedData.Factory<>(PlayerDeathDataTable::new, PlayerDeathDataTable::load, DataFixTypes.PLAYER);
-	}
-	
-	@Override
-	public CompoundTag save(CompoundTag compoundTag) {
-		
-		// Create new NBT list.
-		ListTag listTag = new ListTag();
-		
-		// Iterate through all player data.
-		for(PlayerDeathDataRow dataRow : this.rows) {
-			
-			// Serialize player data to NBT.
-			CompoundTag playerTag = dataRow.serialize();
-
-			// Add NBT to list.
-			listTag.add(playerTag);
-		}
-		
-		// Store all NBTs to server data.
-		compoundTag.put(KEY, listTag);
-
-		// Return server data back for further processing.
-		return compoundTag;
 	}
 	
 	public static PlayerDeathDataTable load(CompoundTag compoundTag) {
@@ -105,6 +83,29 @@ public final class PlayerDeathDataTable extends SavedData {
 		
 		// Set data to be dirty as changes have been made.
 		this.setDirty();
+	}
+
+	@Override
+	public CompoundTag save(CompoundTag compoundTag, Provider pRegistries) {
+		
+		// Create new NBT list.
+		ListTag listTag = new ListTag();
+		
+		// Iterate through all player data.
+		for(PlayerDeathDataRow dataRow : this.rows) {
+			
+			// Serialize player data to NBT.
+			CompoundTag playerTag = dataRow.serialize();
+
+			// Add NBT to list.
+			listTag.add(playerTag);
+		}
+		
+		// Store all NBTs to server data.
+		compoundTag.put(KEY, listTag);
+
+		// Return server data back for further processing.
+		return compoundTag;
 	}
 	
 }	
