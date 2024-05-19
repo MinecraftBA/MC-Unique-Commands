@@ -12,6 +12,10 @@ public class LocationData {
 		this.dimensionResId = dimensionResId;
 	}
 	
+	public LocationData(int x, int y, int z, String dimensionResId) {
+		this(new BlockPos(x,y,z), dimensionResId);
+	}
+	
 	public int[] getCoords() {
 		return new int[] {
 			blockPos.getX(),

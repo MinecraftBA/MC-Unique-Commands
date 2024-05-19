@@ -11,12 +11,10 @@ import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
 import ba.minecraft.uniquecommands.common.core.helper.ServerHelper;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.TickEvent.PlayerTickEvent;
-import net.minecraftforge.event.TickEvent.ServerTickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -206,7 +204,7 @@ public final class AccountEventHandler {
 		}
 		
 		// Get game mode for player.
-		ServerPlayerGameMode gameMode = player.gameMode;
+		//ServerPlayerGameMode gameMode = player.gameMode;
 
 		// Incomplete
 	}

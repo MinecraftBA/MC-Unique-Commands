@@ -275,14 +275,11 @@ public final class PlayerManager {
 		int y = coordinates[1];
 		int z = coordinates[2];
 
-		// Create block position from coordinates.
-		BlockPos blockPos = new BlockPos(x, y, z);
-
 		// Get ID of resource location for dimension.
 		String dimensionResId = data.getString(key + ":dim");
 
 		// Create new location.
-		LocationData location = new LocationData(blockPos, dimensionResId);
+		LocationData location = new LocationData(x,y,z, dimensionResId);
 		
 		return location;
 	}
