@@ -12,14 +12,14 @@ public final class LocationHelper {
 	public static ServerLevel getLevel(MinecraftServer server, String dimensionResId) {
 		
 		// Create resource location based on resource ID.
-		ResourceLocation dimensionResLoc = ResourceLocation.withDefaultNamespace(dimensionResId);
-		
+		ResourceLocation dimensionResLoc = ResourceLocation.parse(dimensionResId);
+
 		// Get resource key for dimension.
 		ResourceKey<Level> dimensionResKey = ResourceKey.create(Registries.DIMENSION, dimensionResLoc);
 
 		// Get reference to level that matches resource key.
 		ServerLevel level = server.getLevel(dimensionResKey);
-		
+
 		return level;
 	}
 }
