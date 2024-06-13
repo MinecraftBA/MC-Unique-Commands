@@ -12,7 +12,7 @@ public final class LocationHelper {
 	public static ServerLevel getLevel(MinecraftServer server, String dimensionResId) {
 		
 		// Create resource location based on resource ID.
-		ResourceLocation dimensionResLoc = new ResourceLocation(dimensionResId);
+		ResourceLocation dimensionResLoc = ResourceLocation.withDefaultNamespace(dimensionResId);
 		
 		// Get resource key for dimension.
 		ResourceKey<Level> dimensionResKey = ResourceKey.create(Registries.DIMENSION, dimensionResLoc);
