@@ -7,13 +7,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.mindrot.jbcrypt.BCrypt;
+
 import com.mojang.authlib.GameProfile;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
 import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataRow;
-import ba.minecraft.uniquecommands.common.core.data.PlayerSeenData;
-import ba.minecraft.uniquecommands.common.core.data.PlayerDeathsDataTable;
-import ba.minecraft.uniquecommands.common.core.data.PlayersSeenSavedData;
+import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataRow;
+import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataTable;
+import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataTable;
+import ba.minecraft.uniquecommands.common.core.models.LocationData;
+import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -27,12 +33,14 @@ import net.minecraft.world.level.storage.DimensionDataStorage;
 public final class PlayerManager {
 
 	private static final String SEENS_KEY = "seens";
-	
 	private static final String DEATHS_KEY = "deaths";
-
+	
 	private static final Map<UUID, Long> teleports = 
 			new HashMap<UUID, Long>();
 	
+    private static final ConcurrentHashMap<UUID, Boolean> activeLogins = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<UUID, Integer> activeCounters = new ConcurrentHashMap<>();
+    
 	public static void setTeleportTimestamp(UUID playerId) {
 		teleports.put(playerId, LocalDateTime.now().toEpochSecond(OffsetDateTime.now().getOffset()));
 	}
@@ -55,7 +63,6 @@ public final class PlayerManager {
 			return;
 		}
 
-
 		// Cast level to ServerLevel (since it is not client side.
 		ServerLevel serverLevel = (ServerLevel)level;
 
@@ -69,13 +76,13 @@ public final class PlayerManager {
 		String playerName = playerProfile.getName();
 		
 		// Create saved data.
-		PlayerSeenData playerData = new PlayerSeenData(LocalDateTime.now(), playerId, playerName);
+		PlayerSeenDataRow playerData = new PlayerSeenDataRow(LocalDateTime.now(), playerId, playerName);
 
 		// Get reference to server persistent data.
 		DimensionDataStorage storage = serverLevel.getDataStorage();
 
 		// Load players saved data.
-		PlayersSeenSavedData savedData = tryLoadPlayersSeenData(storage);
+		PlayerSeenDataTable savedData = tryLoadPlayersSeenData(storage);
 
 		// Insert or update data for specific player.
 		savedData.upsertPlayerData(playerData);
@@ -84,16 +91,16 @@ public final class PlayerManager {
 		storage.set(SEENS_KEY, savedData);
 	}		
 	
-	public static List<PlayerSeenData> getSeen(ServerLevel serverLevel, String playerName) {
+	public static List<PlayerSeenDataRow> getSeen(ServerLevel serverLevel, String playerName) {
 		
 		// Get reference to level storage.
 		DimensionDataStorage dataStorage = serverLevel.getDataStorage();
 		
 		// Load players saved data.
-		PlayersSeenSavedData savedData = tryLoadPlayersSeenData(dataStorage);
+		PlayerSeenDataTable savedData = tryLoadPlayersSeenData(dataStorage);
 		
 		// Get data for all players.
-		List<PlayerSeenData> playersData = savedData.getPlayersData();
+		List<PlayerSeenDataRow> playersData = savedData.getDataRows();
 		
 		// Return only players that match the player name.
 		return playersData.stream()
@@ -101,29 +108,29 @@ public final class PlayerManager {
 					      .toList();
 	}
 	
-	private static PlayersSeenSavedData tryLoadPlayersSeenData(DimensionDataStorage storage) {
+	private static PlayerSeenDataTable tryLoadPlayersSeenData(DimensionDataStorage storage) {
 
 		// Load saved data based on the key.
-		PlayersSeenSavedData savedData = storage.get(PlayersSeenSavedData.factory(), SEENS_KEY);
+		PlayerSeenDataTable savedData = storage.get(PlayerSeenDataTable.factory(), SEENS_KEY);
 		
 		// IF: Data was never saved before.
 		if(savedData == null) {
-			savedData = PlayersSeenSavedData.create();
+			savedData = PlayerSeenDataTable.create();
 		}
 		
 		return savedData;
 	}
 	
-	private static PlayerDeathsDataTable loadPlayerDeathsDataTable(DimensionDataStorage dataStorage) {
+	private static PlayerDeathDataTable loadPlayerDeathsDataTable(DimensionDataStorage dataStorage) {
 
 		// Load saved deaths data table based on the key which is stored in deaths.dat file.
-		PlayerDeathsDataTable dataTable = dataStorage.get(PlayerDeathsDataTable.factory(), DEATHS_KEY);
+		PlayerDeathDataTable dataTable = dataStorage.get(PlayerDeathDataTable.factory(), DEATHS_KEY);
 		
 		// IF: Data table was never saved before / it does not exist.
 		if(dataTable == null) {
 			
 			// Create data table for the first time and save it.
-			dataTable = PlayerDeathsDataTable.create();
+			dataTable = PlayerDeathDataTable.create();
 		}
 		
 		// Return data table.
@@ -173,7 +180,7 @@ public final class PlayerManager {
 		DimensionDataStorage dataStorage = serverLevel.getDataStorage();
 
 		// Load saved death data for all players.
-		PlayerDeathsDataTable dataTable = loadPlayerDeathsDataTable(dataStorage);
+		PlayerDeathDataTable dataTable = loadPlayerDeathsDataTable(dataStorage);
 
 		// Insert or update data for specific player.
 		dataTable.upsertDataRow(dataRow);
@@ -188,7 +195,7 @@ public final class PlayerManager {
 		DimensionDataStorage dataStorage = serverLevel.getDataStorage();
 		
 		// Load data table with deaths of all players.
-		PlayerDeathsDataTable dataTable = loadPlayerDeathsDataTable(dataStorage);
+		PlayerDeathDataTable dataTable = loadPlayerDeathsDataTable(dataStorage);
 		
 		// Get data rows for all players.
 		List<PlayerDeathDataRow> dataRows = dataTable.getRows();
@@ -202,24 +209,10 @@ public final class PlayerManager {
 		return searchResult;
 	}
 	
-	public static void saveLocationData(ServerPlayer player, String locName) {
-
+	public static LocationData getPlayerLocation(ServerPlayer player) 
+	{
 		// Get position of lower player block.
 		BlockPos playerPos = player.blockPosition();
-		
-		// Get X, Y, Z coordinates of block position.
-		int x = playerPos.getX();
-		int y = playerPos.getY();
-		int z = playerPos.getZ();
-		
-		// Get reference to personal persistent data of player.
-		CompoundTag data = player.getPersistentData();
-
-		// Create key => experimentalmod:home
-		String key = UniqueCommandsMod.MODID + ":home:" + locName;
-		
-		// Save array of coordinates in persistent data under key.
-		data.putIntArray(key + ":coords", new int[] { x, y, z });
 		
 		// Get reference to level at which player is.
 		ServerLevel level = player.serverLevel();
@@ -228,9 +221,137 @@ public final class PlayerManager {
 		ResourceKey<Level> dimension = level.dimension();
 		
 		// Get location of dimension resource.
-		ResourceLocation resLoc = dimension.location();
+		ResourceLocation dimensionResLoc = dimension.location();
+
+		// Get dimension resource location identifier.
+		String dimensionResId = dimensionResLoc.toString();
 		
-		// Save information about level.
-		data.putString(key + ":dim", resLoc.toString());
+		// Create location instance.
+		LocationData location = new LocationData(playerPos, dimensionResId);
+
+		return location;
+	}
+	
+	public static LocationData saveLocationData(ServerPlayer player, String locGroup, String locName) {
+
+		// Get reference to personal persistent data of player.
+		CompoundTag data = player.getPersistentData();
+
+		// Get current location information for player.
+		LocationData location = getPlayerLocation(player);
+
+		// Create key => uniquecommands:{locGroup}:{locName}
+		String key = getLocKey(locGroup, locName);
+		
+		// Save array of coordinates in persistent data with key uniquecommands:{locGroup}:{locName}:coords
+		data.putIntArray(key + ":coords", location.getCoords());
+		
+		// Save information about dimension in persistent data with key uniquecommands:{locGroup}:{locName}:dim
+		data.putString(key + ":dim", location.getDimensionResId());
+		
+		return location;
+	}
+	
+	public static LocationData loadLocationData(ServerPlayer player, String locGroup, String locName) {
+
+		// Get reference to personal persistent data of player.
+		CompoundTag data = player.getPersistentData();
+
+		// Create key => uniquecommands:{locGroup}:{locName}
+		String key = getLocKey(locGroup, locName);
+
+		// Retrieve coordinates by providing key to persistent data.
+		int[] coordinates = data.getIntArray(key + ":coords");
+
+		// IF: Coordinates were not saved previously.
+		if (coordinates.length == 0) {
+			
+			// Exit as location does not exist.
+			return null;
+		}
+		
+		// Extract coordinates from array.
+		int x = coordinates[0];
+		int y = coordinates[1];
+		int z = coordinates[2];
+
+		// Get ID of resource location for dimension.
+		String dimensionResId = data.getString(key + ":dim");
+
+		// Create new location.
+		LocationData location = new LocationData(x,y,z, dimensionResId);
+		
+		return location;
+	}
+
+	private static String getLocKey(String locGroup, String locName) {
+		return UniqueCommandsMod.MODID + ":" + locGroup + ":" + locName;
+	}
+	
+	public static void savePassword(ServerPlayer player, String password) {
+
+		// Get reference to personal persistent data of player.
+		CompoundTag data = player.getPersistentData();
+
+		// GEnerate password hash.
+		String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
+		
+		// Save player designated password.
+		data.putString("password", passwordHash);
+
+	}
+	
+	public static String loadPassword(ServerPlayer player) {
+
+		// Get reference to personal persistent data of player.
+		CompoundTag data = player.getPersistentData();
+
+		// Load password hash.
+		String passwordHash = data.getString("password");
+		
+		return passwordHash;
+	}
+	
+	public static boolean verifyPassword(ServerPlayer player, String password) {
+		
+		// Load existing password.
+		String passwordHash = loadPassword(player);
+		
+		// 
+		return BCrypt.checkpw(password, passwordHash);
+	}
+	
+	public static void setLoggedInStatus(ServerPlayer player, Boolean isLoggedIn) {
+
+		// Get unique identifier of player.
+		UUID playerId = player.getUUID();
+
+		// Set logged in status.
+		activeLogins.put(playerId, isLoggedIn);
+	}
+	
+	public static Boolean isLoggedIn(ServerPlayer player) {
+		
+		// Get unique identifier of player.
+		UUID playerId = player.getUUID();
+		
+		// IF: Player was not registered in active logins.
+		if(!activeLogins.containsKey(playerId)) {
+			return false;
+		}
+		
+		// Get login 
+		Boolean isLoggedIn = activeLogins.get(playerId);
+
+		return isLoggedIn;
+	}
+	
+	public static void startCounter(ServerPlayer player) {
+		
+		// Get unique identifier of player.
+		UUID playerId = player.getUUID();
+
+		// Set counter value to maximum.
+		activeCounters.put(playerId, UniqueCommandsModConfig.LOGIN_TIMEOUT_DURATION);
 	}
 }

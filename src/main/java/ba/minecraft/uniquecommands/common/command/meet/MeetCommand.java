@@ -120,7 +120,7 @@ public class MeetCommand {
 			if(playerId != summonerId) {
 
 				// Save current location of player before teleporting with name such as: meeting_2023_09_09_23_15_00.
-				PlayerManager.saveLocationData(player, "Meeting_" + timestamp);
+				PlayerManager.saveLocationData(player, "home", "Meeting_" + timestamp);
 				
 				// Get current rotation of player.
 				float yaw = player.getYRot();

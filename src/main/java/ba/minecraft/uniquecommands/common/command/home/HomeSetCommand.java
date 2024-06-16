@@ -6,9 +6,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
+import ba.minecraft.uniquecommands.common.core.models.LocationData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -51,23 +51,16 @@ public final class HomeSetCommand {
 
 			return -1;
 		}
+		
 		// Get reference to player that has typed the command.
 		ServerPlayer player = source.getPlayerOrException();
 		
 		// Save current location to player data.
-		PlayerManager.saveLocationData(player, locName);
-		
-		// Get position of lower player block.
-		BlockPos playerPos = player.blockPosition();
-		
-		// Get X, Y, Z coordinates of block position.
-		int x = playerPos.getX();
-		int y = playerPos.getY();
-		int z = playerPos.getZ();
+		LocationData location = PlayerManager.saveLocationData(player, "home", locName);
 
 		// Create message to be displayed in console.		
 		MutableComponent message = Component.literal(
-			"Home " + locName + " is set to: " + x + " " + y + " " + z + ""
+			"Home " + locName + " is set to: " + location.getX() + " " + location.getY() + " " + location.getZ() + ""
 		);
 
 		// Send message to console.
