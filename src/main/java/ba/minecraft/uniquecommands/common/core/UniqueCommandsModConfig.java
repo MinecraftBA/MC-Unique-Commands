@@ -37,6 +37,9 @@ public final class UniqueCommandsModConfig {
     
     private static final ForgeConfigSpec.BooleanValue HOME_ENABLED_CONFIG;
     private static final ForgeConfigSpec.IntValue HOME_OP_LEVEL_CONFIG;
+    
+    private static final ForgeConfigSpec.BooleanValue JAIL_ENABLED_CONFIG;
+    private static final ForgeConfigSpec.IntValue JAIL_OP_LEVEL_CONFIG;
 
     public static Boolean ACCOUNTS_ENABLED;
     public static int MAX_FAILED_LOGINS;
@@ -64,6 +67,9 @@ public final class UniqueCommandsModConfig {
     
     public static Boolean HOME_ENABLED;
     public static int HOME_OP_LEVEL;
+    
+    public static Boolean JAIL_ENABLED;
+    public static int JAIL_OP_LEVEL;
     
     static {
     	BUILDER.push("Configs for Unique Commands Mod");
@@ -124,6 +130,12 @@ public final class UniqueCommandsModConfig {
     	
     	HOME_OP_LEVEL_CONFIG = BUILDER.comment("Defines what op level /home command requires.")
 	            .defineInRange("Home OP level", 0, 0, 4);
+    	
+    	JAIL_ENABLED_CONFIG = BUILDER.comment("Defines whether /jail commands is enabled.")
+	            .define("Jail enabled", true);
+    	
+    	JAIL_OP_LEVEL_CONFIG = BUILDER.comment("Defines what op level /jail commands requires.")
+	            .defineInRange("Jail OP level", 0, 0, 4);
 
     	BUILDER.pop();
     	
@@ -159,5 +171,8 @@ public final class UniqueCommandsModConfig {
     	
     	HOME_ENABLED = HOME_ENABLED_CONFIG.get();
     	HOME_OP_LEVEL = HOME_OP_LEVEL_CONFIG.get();
+    	
+    	JAIL_ENABLED = JAIL_ENABLED_CONFIG.get();
+    	JAIL_OP_LEVEL = JAIL_OP_LEVEL_CONFIG.get();
     }
 }
