@@ -22,4 +22,18 @@ public final class LocationHelper {
 
 		return level;
 	}
+	
+	public static String getDimensionId(ServerLevel level) {
+
+		// Get resource key for the dimension of level.
+		ResourceKey<Level> dimension = level.dimension();
+		
+		// Get location of dimension resource.
+		ResourceLocation resLoc = dimension.location();
+		
+		// Get resource ID of the dimension.
+		String dimId = resLoc.toString();
+		
+		return dimId;
+	}
 }

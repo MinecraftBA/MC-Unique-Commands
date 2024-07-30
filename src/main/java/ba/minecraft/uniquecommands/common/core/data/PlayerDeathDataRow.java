@@ -14,14 +14,14 @@ public final class PlayerDeathDataRow {
 	private final static String POS_Z_KEY= "PosZ";
 	
 	private UUID playerId;
-	private String dimension;
+	private String dimResId;
 	private int posX;
 	private int posY;
 	private int posZ;
 	
-	public PlayerDeathDataRow(UUID playerId, String dimension, int posX, int posY, int posZ) {
+	public PlayerDeathDataRow(UUID playerId, String dimResId, int posX, int posY, int posZ) {
 		this.playerId = playerId;
-		this.dimension = dimension;
+		this.dimResId = dimResId;
 		this.posX = posX;
 		this.posY = posY;
 		this.posZ = posZ;
@@ -32,7 +32,7 @@ public final class PlayerDeathDataRow {
 		CompoundTag compoundTag = new CompoundTag();
 		
 		compoundTag.putUUID(UUID_KEY, playerId);
-		compoundTag.putString(DIM_KEY,dimension);
+		compoundTag.putString(DIM_KEY,dimResId);
 		compoundTag.putInt(POS_X_KEY, posX);
 		compoundTag.putInt(POS_Y_KEY, posY);
 		compoundTag.putInt(POS_Z_KEY, posZ);
@@ -45,8 +45,8 @@ public final class PlayerDeathDataRow {
 		// Get player UUID.
 		UUID playerId = compoundTag.getUUID(UUID_KEY);
 
-		// Get dimension name.
-		String dimension = compoundTag.getString(DIM_KEY);
+		// Get dimension resource ID.
+		String dimResId = compoundTag.getString(DIM_KEY);
 		
 		int posX = compoundTag.getInt(POS_X_KEY);
 		
@@ -55,7 +55,7 @@ public final class PlayerDeathDataRow {
 		int posZ = compoundTag.getInt(POS_Z_KEY);
 		
 		// Create new instance of saved data.
-		PlayerDeathDataRow dataRow = new PlayerDeathDataRow( playerId, dimension, posX, posY, posZ);
+		PlayerDeathDataRow dataRow = new PlayerDeathDataRow( playerId, dimResId, posX, posY, posZ);
 		
 		return dataRow;
 	}
@@ -64,12 +64,12 @@ public final class PlayerDeathDataRow {
 		return playerId;
 	}
 
-	public void setDimension(String dimension) {
-		this.dimension = dimension;
+	public void setDimensionResId(String dimResId) {
+		this.dimResId = dimResId;
 	}
 
-	public String getDimension() {
-		return dimension;
+	public String getDimensionResId() {
+		return dimResId;
 	}
 	
 	public void setBlockPos(BlockPos blockPos) {

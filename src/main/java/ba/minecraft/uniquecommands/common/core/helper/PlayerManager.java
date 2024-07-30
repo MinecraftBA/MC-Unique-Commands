@@ -156,14 +156,8 @@ public final class PlayerManager {
 		// Get UUID of player.
 		UUID playerId = player.getUUID();
 		
-		// Get resource key for the dimension of level.
-		ResourceKey<Level> dimension = level.dimension();
-		
-		// Get location of dimension resource.
-		ResourceLocation resLoc = dimension.location();
-		
-		// Get name of the dimension.
-		String dimName = resLoc.toString();
+		// Get dimension resourceId.
+		String dimResId = LocationHelper.getDimensionId(serverLevel);
 		
 		// Get current position of player.
 		BlockPos playerPos = player.blockPosition();
@@ -174,7 +168,7 @@ public final class PlayerManager {
 		int posZ = playerPos.getZ();
 		
 		// Create object that will hold information about player's death.
-		PlayerDeathDataRow dataRow = new PlayerDeathDataRow(playerId,dimName,posX,posY,posZ);
+		PlayerDeathDataRow dataRow = new PlayerDeathDataRow(playerId,dimResId,posX,posY,posZ);
 		
 		// Get reference to server persistent data.
 		DimensionDataStorage dataStorage = serverLevel.getDataStorage();
