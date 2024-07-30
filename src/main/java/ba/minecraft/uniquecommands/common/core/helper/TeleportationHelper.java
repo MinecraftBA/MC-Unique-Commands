@@ -8,7 +8,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.EntityTeleportEvent.TeleportCommand;
 
@@ -55,13 +54,6 @@ public class TeleportationHelper {
         if (!Level.isInSpawnableBounds(blockPos)) {
         	
         	// Indicate that teleportation was not performed.
-        	return false;
-        }
-        
-        // IF: Location is not safe for teleportation.
-        if(!isSafe(level, blockPos)) {
-        	
-        	// Indicate that teleportation was not successful.
         	return false;
         }
 
