@@ -58,22 +58,17 @@ public class TpBottomCommand {
 		int y = playerPos.getY();
 		int z = playerPos.getZ();
 		
-		// Get player's current rotation.
-		float yaw = player.getYRot();
-		float pitch = player.getXRot();
-
 		// Iterate from the world buttom until next free space below player.
 		for(int i= -64; i < y-3; i++) {
-			
-			// Get position of block above.
-			BlockPos blockPos = new BlockPos(x,i,z);
 
-			// IF: Location is safe for teleportation.
-			if(TeleportationHelper.isSafe(level, blockPos)) {
-				
-				// Teleport player.
-	    		player.teleportTo(level, x, i, z, yaw, pitch);
-	    		return 1;
+			// Teleport player to location.
+			boolean isTeleported = TeleportationHelper.teleportCommand(level, player, x, i, z);
+
+			// IF: Teleportation was successful.
+			if (isTeleported) {
+
+				// Indicate success.
+				return 1;
 			}
   			
 		}

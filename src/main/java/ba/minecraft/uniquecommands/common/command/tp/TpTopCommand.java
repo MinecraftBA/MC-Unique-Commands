@@ -56,23 +56,18 @@ public class TpTopCommand {
 		int x = playerPos.getX();
 		int y = playerPos.getY();
 		int z = playerPos.getZ();
-		
-		// Get player's current rotation.
-		float yaw = player.getYRot();
-		float pitch = player.getXRot();
 
 		// Iterate from the top of the world until next location above player.
 		for(int i= 320; i > y+3; i--) {
 			
-			// Get position of block above.
-			BlockPos blockPos = new BlockPos(x,i,z);
+			// Teleport player to location.
+			boolean isTeleported = TeleportationHelper.teleportCommand(level, player, x, i, z);
 
-			// IF: Location is safe for teleportation.
-			if(TeleportationHelper.isSafe(level, blockPos)) {
-				
-				// Teleport player.
-	    		player.teleportTo(level, x, i, z, yaw, pitch);
-	    		return 1;
+			// IF: Teleportation was successful.
+			if (isTeleported) {
+
+				// Indicate success.
+				return 1;
 			}
   			
 		}

@@ -2,7 +2,15 @@ package ba.minecraft.uniquecommands.common.core.helper;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.event.entity.EntityTeleportEvent.TeleportCommand;
 
 public class TeleportationHelper {
 	
@@ -21,6 +29,75 @@ public class TeleportationHelper {
 		boolean isSafe = blockState.isAir() && aboveBlockState.isAir() && !belowBlockState.isAir();
 		
 		return isSafe;
+	}
+	
+	public static boolean teleportCommand(ServerLevel level, Entity entity, double x, double y, double z) {
+        
+		// Generate teleportation event via FORGE bus.
+		TeleportCommand event = ForgeEventFactory.onEntityTeleportCommand(entity, x, y, z);
+        
+		// IF: Teleportation was canceled by event handler.
+		if (event.isCanceled()) {
+			
+			// Indicate that teleportation was not performed.
+			return false;
+		}
+		
+		// Take coordinates from event, just in case that event handler has modified them.
+        x = event.getTargetX();
+        y = event.getTargetY();
+        z = event.getTargetZ();
+        
+        // Get block position on specified coordinates.
+        BlockPos blockPos = BlockPos.containing(x, y, z);
+		
+        // IF: Position is not in spawnable bounds (outside of the dimension constraints).
+        if (!Level.isInSpawnableBounds(blockPos)) {
+        	
+        	// Indicate that teleportation was not performed.
+        	return false;
+        }
+        
+        // IF: Location is not safe for teleportation.
+        if(!isSafe(level, blockPos)) {
+        	
+        	// Indicate that teleportation was not successful.
+        	return false;
+        }
+
+        // Get yaw and pitch of entity.
+        float yaw = entity.getYRot();
+        float pitch = entity.getXRot();
+        
+        // Round yaw and pitch.
+        yaw = Mth.wrapDegrees(yaw);
+        pitch = Mth.wrapDegrees(pitch);
+        
+        // IF: Teleportation was not successful.
+        if(!entity.teleportTo(level, x, y, z, null, yaw, pitch)) {
+        	
+        	// Indicate it wasn't.
+        	return false;
+        }
+
+        // IF: Entity is not living entity or it is not still falling.
+        if (!(entity instanceof LivingEntity livingentity) || !livingentity.isFallFlying()) {
+        	
+        	// Prevent movement on Y axis.
+        	entity.setDeltaMovement(entity.getDeltaMovement().multiply(1.0, 0.0, 1.0));
+        	
+        	// Indicate that entity has hit the ground.
+        	entity.setOnGround(true);
+        }
+
+        // IF: Entity was pathfinder mob.
+        if (entity instanceof PathfinderMob pathfindermob) {
+        	
+        	// Prevent further movement.
+            pathfindermob.getNavigation().stop();
+        }
+        
+        return true;
 	}
 
 }

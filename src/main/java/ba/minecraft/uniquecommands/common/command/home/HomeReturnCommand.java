@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import ba.minecraft.uniquecommands.common.core.helper.LocationHelper;
 import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
+import ba.minecraft.uniquecommands.common.core.helper.TeleportationHelper;
 import ba.minecraft.uniquecommands.common.core.models.LocationData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -80,11 +81,21 @@ public final class HomeReturnCommand {
 		// Get server level based on its resource identifier.
 		ServerLevel level = LocationHelper.getLevel(server, location.getDimensionResId());
 
-		float yaw = player.getYRot();
-		float pitch = player.getXRot();
+		// Perform teleportation of player.
+		boolean isTeleported = TeleportationHelper.teleportCommand(level, player, location.getX(), location.getY(), location.getZ());
 		
-		// Teleport player to coordinates.
-		player.teleportTo(level, location.getX(), location.getY(), location.getZ(), yaw, pitch);
+		// IF: Teleportation was not successful.
+		if(!isTeleported) {
+			MutableComponent message = Component.literal(
+				"Teleportation to home named " + locName + " has failed!"
+			);
+			
+			// Send error message.
+			source.sendFailure(message);
+
+			// Return error code.
+			return -1;
+		}
 		
 		// Send confirmation message.
 		source.sendSuccess(() -> {
@@ -100,6 +111,5 @@ public final class HomeReturnCommand {
 		
 		// Return success code.
 		return 1;
-		
 	}
 }
