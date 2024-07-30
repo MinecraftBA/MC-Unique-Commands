@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
 
+import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataTable;
 import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataRow;
 import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataTable;
 import ba.minecraft.uniquecommands.common.core.data.jail.JailDataRow;
@@ -17,6 +18,25 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 
 public class JailManager {
+	
+	private static final String JAILS_KEY = "jails";
+	
+	private static JailDataTable loadJailDataTable(DimensionDataStorage dataStorage) {
+
+		// Load saved deaths data table based on the key which is stored in deaths.dat file.
+		JailDataTable dataTable = dataStorage.get(JailDataTable.factory(), JAILS_KEY);
+		
+		// IF: Data table was never saved before / it does not exist.
+		if(dataTable == null) {
+			
+			// Create data table for the first time and save it.
+			dataTable = JailDataTable.create();
+		}
+		
+		// Return data table.
+		return dataTable;
+		
+	}
 	
 	public static void setJail(ServerLevel level, String name, BlockPos blockPos) {
 				
@@ -40,13 +60,13 @@ public class JailManager {
 		DimensionDataStorage storage = level.getDataStorage();
 
 		// Load players saved data.
-		JailDataTable savedData = tryLoadPlayersSeenData(storage);
+		JailDataTable savedData = loadJailDataTable(storage);
 
 		// Insert or update data for specific jail.
-		savedData.upsertJailData(jailData);
+		savedData.upsertDataRow(jailData);
 
 		// Save data to server.
-		storage.set(SEENS_KEY, savedData);
+		storage.set(JAILS_KEY, savedData);
 	}
 	
 }
