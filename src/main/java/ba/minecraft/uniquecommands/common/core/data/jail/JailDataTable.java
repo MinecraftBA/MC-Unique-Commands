@@ -30,7 +30,7 @@ public class JailDataTable extends SavedData {
 	}
 	
     public static SavedData.Factory<JailDataTable> factory() {
-		return new SavedData.Factory<>(JailDataTable::new, JailDataTable::load, DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
+		return new SavedData.Factory<>(JailDataTable::new, JailDataTable::load, null);
 	}
 	
 	public static JailDataTable load(CompoundTag compoundTag, Provider provider) {

@@ -53,7 +53,7 @@ public final class JailDataRow {
 		int posZ = compoundTag.getInt(POS_Z_KEY);
 		
 		// Create new instance of saved data.
-		JailDataRow dataRow = new JailDataRow( name, dimension, posX, posY, posZ);
+		JailDataRow dataRow = new JailDataRow(name, dimension, posX, posY, posZ);
 		
 		return dataRow;
 	}

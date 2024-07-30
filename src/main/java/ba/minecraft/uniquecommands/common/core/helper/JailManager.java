@@ -20,34 +20,33 @@ public class JailManager {
 	
 	public static void setJail(ServerLevel level, String name, BlockPos blockPos) {
 				
-				
 		// Get resource key for the dimension of level.
-				ResourceKey<Level> dimension = level.dimension();
-				
-				// Get location of dimension resource.
-				ResourceLocation resLoc = dimension.location();
-				
-				// Get name of the dimension.
-				String dimName = resLoc.toString();
-				
-				int x = blockPos.getX();
-				int y = blockPos.getY();
-				int z = blockPos.getZ();
-				
-				// Create saved data.
-				JailDataRow jailData = new JailDataRow(name, dimName, x, y, z);
+		ResourceKey<Level> dimension = level.dimension();
+		
+		// Get location of dimension resource.
+		ResourceLocation resLoc = dimension.location();
+		
+		// Get name of the dimension.
+		String dimName = resLoc.toString();
+		
+		int x = blockPos.getX();
+		int y = blockPos.getY();
+		int z = blockPos.getZ();
+		
+		// Create saved data.
+		JailDataRow jailData = new JailDataRow(name, dimName, x, y, z);
 
-				// Get reference to server persistent data.
-				DimensionDataStorage storage = level.getDataStorage();
+		// Get reference to server persistent data.
+		DimensionDataStorage storage = level.getDataStorage();
 
-				// Load players saved data.
-				JailDataTable savedData = tryLoadPlayersSeenData(storage);
+		// Load players saved data.
+		JailDataTable savedData = tryLoadPlayersSeenData(storage);
 
-				// Insert or update data for specific jail.
-				savedData.upsertJailData(jailData);
+		// Insert or update data for specific jail.
+		savedData.upsertJailData(jailData);
 
-				// Save data to server.
-				storage.set(SEENS_KEY, savedData);
+		// Save data to server.
+		storage.set(SEENS_KEY, savedData);
 	}
 	
 }
