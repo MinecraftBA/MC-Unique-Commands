@@ -1,18 +1,17 @@
 package ba.minecraft.uniquecommands.common.command.graveback;
 
-import java.util.Optional;
-import java.util.UUID;
-
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
-import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataRow;
+import ba.minecraft.uniquecommands.common.core.helper.LocationHelper;
 import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
+import ba.minecraft.uniquecommands.common.core.models.LocationData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -51,28 +50,28 @@ public final class GravebackCommand {
 		// Get reference to player that has typed the command.
 		ServerPlayer player = source.getPlayerOrException();
 		
-		// Get level on which is player currently.
-		ServerLevel serverLevel = player.serverLevel();
-		
-		// Get player UUID.
-		UUID playerId = player.getUUID();
-		
 		// Get rotation of player.
 		float yaw = player.getYRot();
 		float pitch = player.getXRot();
 		
-		Optional<PlayerDeathDataRow> optionalDataRow = PlayerManager.loadDeathData(serverLevel, playerId);
+		LocationData deathLocation = PlayerManager.loadDeathData(player);
 		
-		// IF: Data row was found.
-		if(optionalDataRow.isPresent()) {
+		// IF: Data location was found.
+		if(deathLocation != null) {
 			
-			// Get data row value.
-			PlayerDeathDataRow dataRow = optionalDataRow.get();
-				
 			// Get coordinates from data row.
-			int posX = dataRow.getPosX();
-			int posY = dataRow.getPosY();
-			int posZ = dataRow.getPosZ();
+			int posX = deathLocation.getX();
+			int posY = deathLocation.getY();
+			int posZ = deathLocation.getZ();
+			
+			// Get dimension resource identifier.
+			String dimResId = deathLocation.getDimensionResId();
+			
+			// Get reference to Minecraft server
+			MinecraftServer server = player.getServer();
+			
+			// Convert dimension resource Id to Level.
+			ServerLevel serverLevel = LocationHelper.getLevel(server, dimResId);
 			
 			// Teleport player to coordinates.
 			player.teleportTo(serverLevel,posX,posY,posZ,yaw,pitch);

@@ -20,7 +20,6 @@ public final class LivingDeathEventHandler {
 		
 		Level level = entity.level();
 		
-		
 		if(level.isClientSide()) {
 			
 			return;
@@ -34,7 +33,6 @@ public final class LivingDeathEventHandler {
 		ServerPlayer player = (ServerPlayer)entity;
 		
 		PlayerManager.saveDeathData(player);
-
 	}
 	
 }

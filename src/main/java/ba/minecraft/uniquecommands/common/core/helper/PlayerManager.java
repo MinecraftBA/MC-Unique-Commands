@@ -5,7 +5,6 @@ import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,9 +13,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import com.mojang.authlib.GameProfile;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
-import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataRow;
 import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataRow;
-import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataTable;
 import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataTable;
 import ba.minecraft.uniquecommands.common.core.models.LocationData;
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
@@ -33,7 +30,6 @@ import net.minecraft.world.level.storage.DimensionDataStorage;
 public final class PlayerManager {
 
 	private static final String SEENS_KEY = "seens";
-	private static final String DEATHS_KEY = "deaths";
 	
 	private static final Map<UUID, Long> teleports = 
 			new HashMap<UUID, Long>();
@@ -121,86 +117,12 @@ public final class PlayerManager {
 		return savedData;
 	}
 	
-	private static PlayerDeathDataTable loadPlayerDeathsDataTable(DimensionDataStorage dataStorage) {
-
-		// Load saved deaths data table based on the key which is stored in deaths.dat file.
-		PlayerDeathDataTable dataTable = dataStorage.get(PlayerDeathDataTable.factory(), DEATHS_KEY);
-		
-		// IF: Data table was never saved before / it does not exist.
-		if(dataTable == null) {
-			
-			// Create data table for the first time and save it.
-			dataTable = PlayerDeathDataTable.create();
-		}
-		
-		// Return data table.
-		return dataTable;
-		
-	}
-	
-	public static void saveDeathData(Player player) {
-		
-		// Get reference to a level where player has died.
-		Level level = player.level();
-				
-		// IF: Code is executing on client side.
-		if (level.isClientSide()) {
-			
-			// Do nothing.
-			return;
-		}
-		
-		// Cast level to ServerLevel (since it is not client side).
-		ServerLevel serverLevel = (ServerLevel)level;
-
-		// Get UUID of player.
-		UUID playerId = player.getUUID();
-		
-		// Get dimension resourceId.
-		String dimResId = LocationHelper.getDimensionId(serverLevel);
-		
-		// Get current position of player.
-		BlockPos playerPos = player.blockPosition();
-
-		// Get coordinates of current position.
-		int posX = playerPos.getX();
-		int posY = playerPos.getY();
-		int posZ = playerPos.getZ();
-		
-		// Create object that will hold information about player's death.
-		PlayerDeathDataRow dataRow = new PlayerDeathDataRow(playerId,dimResId,posX,posY,posZ);
-		
-		// Get reference to server persistent data.
-		DimensionDataStorage dataStorage = serverLevel.getDataStorage();
-
-		// Load saved death data for all players.
-		PlayerDeathDataTable dataTable = loadPlayerDeathsDataTable(dataStorage);
-
-		// Insert or update data for specific player.
-		dataTable.upsertDataRow(dataRow);
-
-		// Save data to server.
-		dataStorage.set(DEATHS_KEY, dataTable);
+	public static void saveDeathData(ServerPlayer player) {
+		saveLocationData(player, "auto", "last_death");
 	}	
 	
-	public static Optional<PlayerDeathDataRow> loadDeathData(ServerLevel serverLevel, UUID playerId) {
-		
-		// Get reference to a level data storage.
-		DimensionDataStorage dataStorage = serverLevel.getDataStorage();
-		
-		// Load data table with deaths of all players.
-		PlayerDeathDataTable dataTable = loadPlayerDeathsDataTable(dataStorage);
-		
-		// Get data rows for all players.
-		List<PlayerDeathDataRow> dataRows = dataTable.getRows();
-		
-		// Try to find player by his ID.
-		Optional<PlayerDeathDataRow> searchResult =  dataRows.stream()
-					      .filter($row -> $row.getPlayerId().equals(playerId))
-					      .findFirst();
-		
-		// Return search result.
-		return searchResult;
+	public static LocationData loadDeathData(ServerPlayer player) {
+		return loadLocationData(player, "auto", "last_death");
 	}
 	
 	public static LocationData getPlayerLocation(ServerPlayer player) 
