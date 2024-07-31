@@ -1,5 +1,10 @@
 package ba.minecraft.uniquecommands.common.core.helper;
 
+import java.util.List;
+import java.util.Optional;
+
+import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataRow;
+import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataTable;
 import ba.minecraft.uniquecommands.common.core.data.jail.JailDataRow;
 import ba.minecraft.uniquecommands.common.core.data.jail.JailDataTable;
 import net.minecraft.core.BlockPos;
@@ -59,6 +64,25 @@ public class JailManager {
 
 		// Save data to server.
 		storage.set(JAILS_KEY, savedData);
+	}
+	
+	
+	public static Optional<JailDataRow> getJail(ServerLevel serverLevel, String name) {
+		
+		// Get reference to level storage.
+		DimensionDataStorage dataStorage = ServerHelper.getDataStorage(serverLevel);
+		
+		// Load players saved data.
+		JailDataTable savedData = loadJailDataTable(dataStorage);
+		
+		// Get data for all jails.
+		List<JailDataRow> data = savedData.getRows();
+		
+		// Return only jails that match the jail name.
+		Optional<JailDataRow> dataRow = data.stream()
+					      .filter(p -> p.getName().contentEquals(name))
+					      .findFirst();
+		return dataRow;
 	}
 	
 }

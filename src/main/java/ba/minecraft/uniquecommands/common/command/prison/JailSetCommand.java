@@ -5,12 +5,15 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
+import ba.minecraft.uniquecommands.common.core.helper.JailManager;
 import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
 import ba.minecraft.uniquecommands.common.core.models.LocationData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
 public class JailSetCommand {
@@ -55,12 +58,16 @@ public class JailSetCommand {
 			// Get reference to player that has typed the command.
 			ServerPlayer player = source.getPlayerOrException();
 			
-			// Save current location to player data.
-			LocationData location = PlayerManager.saveLocationData(player, "jail", locName);
+			ServerLevel level = source.getLevel();
+			
+			BlockPos blockPos = player.blockPosition();
+			
+			// Save current location to jail data.
+			JailManager.setJail(level, locName, blockPos);
 	
 			// Create message to be displayed in console.		
 			MutableComponent message = Component.literal(
-				"Jail " + locName + " is set to: " + location.getX() + " " + location.getY() + " " + location.getZ() + ""
+				"Jail " + locName + " is set to: " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ() + ""
 			);
 	
 			// Send message to console.
