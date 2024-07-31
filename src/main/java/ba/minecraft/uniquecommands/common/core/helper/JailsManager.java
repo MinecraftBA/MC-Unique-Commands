@@ -9,11 +9,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 
-public class JailsManager {
+public final class JailsManager {
 	
 	private static final String JAILS_KEY = "jails";
 	
-	private static JailDataTable loadJailDataTable(DimensionDataStorage dataStorage) {
+	private static JailDataTable getDataTable(DimensionDataStorage dataStorage) {
 
 		// Load saved deaths data table based on the key which is stored in deaths.dat file.
 		JailDataTable dataTable = dataStorage.get(JailDataTable.factory(), JAILS_KEY);
@@ -42,7 +42,7 @@ public class JailsManager {
 		DimensionDataStorage storage = ServerHelper.getServerStorage(level);
 
 		// Load players saved data.
-		JailDataTable dataTable = loadJailDataTable(storage);
+		JailDataTable dataTable = getDataTable(storage);
 
 		// Insert or update data for specific jail.
 		dataTable.upsertDataRow(jailData);
@@ -58,7 +58,7 @@ public class JailsManager {
 		DimensionDataStorage dataStorage = ServerHelper.getServerStorage(serverLevel);
 		
 		// Load data table with jails.
-		JailDataTable dataTable = loadJailDataTable(dataStorage);
+		JailDataTable dataTable = getDataTable(dataStorage);
 		
 		// Get data for all jails.
 		List<JailDataRow> data = dataTable.getRows();
@@ -67,6 +67,7 @@ public class JailsManager {
 		Optional<JailDataRow> dataRow = data.stream()
 					      .filter(p -> p.getName().contentEquals(name))
 					      .findFirst();
+		
 		return dataRow;
 	}
 	
@@ -76,7 +77,7 @@ public class JailsManager {
 		DimensionDataStorage dataStorage = ServerHelper.getServerStorage(serverLevel);
 		
 		// Load data table with jails.
-		JailDataTable dataTable = loadJailDataTable(dataStorage);
+		JailDataTable dataTable = getDataTable(dataStorage);
 		
 		// Get data for all jails.
 		List<JailDataRow> data = dataTable.getRows();
@@ -90,7 +91,7 @@ public class JailsManager {
 		DimensionDataStorage dataStorage = ServerHelper.getServerStorage(level);
 		
 		// Load data table with jails.
-		JailDataTable dataTable = loadJailDataTable(dataStorage);
+		JailDataTable dataTable = getDataTable(dataStorage);
 		
 		// Remove data row with specified jail name.
 		boolean isRemoved = dataTable.removeDataRow(name);
