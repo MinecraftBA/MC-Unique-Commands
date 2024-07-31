@@ -61,7 +61,7 @@ public final class PlayerManager {
 
 		// Cast level to ServerLevel (since it is not client side.
 		ServerLevel serverLevel = (ServerLevel)level;
-
+		
 		// Get UUID of player.
 		UUID playerId = player.getUUID();
 		
@@ -75,22 +75,22 @@ public final class PlayerManager {
 		PlayerSeenDataRow playerData = new PlayerSeenDataRow(LocalDateTime.now(), playerId, playerName);
 
 		// Get reference to server persistent data.
-		DimensionDataStorage storage = serverLevel.getDataStorage();
+		DimensionDataStorage dataStorage = ServerHelper.getDataStorage(serverLevel);
 
 		// Load players saved data.
-		PlayerSeenDataTable savedData = tryLoadPlayersSeenData(storage);
+		PlayerSeenDataTable savedData = tryLoadPlayersSeenData(dataStorage);
 
 		// Insert or update data for specific player.
 		savedData.upsertPlayerData(playerData);
 
 		// Save data to server.
-		storage.set(SEENS_KEY, savedData);
+		dataStorage.set(SEENS_KEY, savedData);
 	}		
 	
 	public static List<PlayerSeenDataRow> getSeen(ServerLevel serverLevel, String playerName) {
 		
 		// Get reference to level storage.
-		DimensionDataStorage dataStorage = serverLevel.getDataStorage();
+		DimensionDataStorage dataStorage = ServerHelper.getDataStorage(serverLevel);
 		
 		// Load players saved data.
 		PlayerSeenDataTable savedData = tryLoadPlayersSeenData(dataStorage);

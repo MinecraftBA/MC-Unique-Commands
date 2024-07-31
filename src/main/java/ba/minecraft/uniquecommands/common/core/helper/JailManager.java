@@ -1,13 +1,5 @@
 package ba.minecraft.uniquecommands.common.core.helper;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import com.mojang.authlib.GameProfile;
-
-import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataTable;
-import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataRow;
-import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataTable;
 import ba.minecraft.uniquecommands.common.core.data.jail.JailDataRow;
 import ba.minecraft.uniquecommands.common.core.data.jail.JailDataTable;
 import net.minecraft.core.BlockPos;
@@ -57,7 +49,7 @@ public class JailManager {
 		JailDataRow jailData = new JailDataRow(name, dimName, x, y, z);
 
 		// Get reference to server persistent data.
-		DimensionDataStorage storage = level.getDataStorage();
+		DimensionDataStorage storage = ServerHelper.getDataStorage(level);
 
 		// Load players saved data.
 		JailDataTable savedData = loadJailDataTable(storage);
