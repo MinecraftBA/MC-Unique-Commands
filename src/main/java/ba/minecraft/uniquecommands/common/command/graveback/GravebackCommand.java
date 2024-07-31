@@ -1,18 +1,18 @@
 package ba.minecraft.uniquecommands.common.command.graveback;
 
-import java.util.Optional;
-import java.util.UUID;
-
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
-import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataRow;
+import ba.minecraft.uniquecommands.common.core.helper.LocationHelper;
 import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
+import ba.minecraft.uniquecommands.common.core.helper.TeleportationHelper;
+import ba.minecraft.uniquecommands.common.core.models.LocationData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -51,35 +51,10 @@ public final class GravebackCommand {
 		// Get reference to player that has typed the command.
 		ServerPlayer player = source.getPlayerOrException();
 		
-		// Get level on which is player currently.
-		ServerLevel serverLevel = player.serverLevel();
+		LocationData deathLocation = PlayerManager.loadDeathData(player);
 		
-		// Get player UUID.
-		UUID playerId = player.getUUID();
-		
-		// Get rotation of player.
-		float yaw = player.getYRot();
-		float pitch = player.getXRot();
-		
-		Optional<PlayerDeathDataRow> optionalDataRow = PlayerManager.loadDeathData(serverLevel, playerId);
-		
-		// IF: Data row was found.
-		if(optionalDataRow.isPresent()) {
-			
-			// Get data row value.
-			PlayerDeathDataRow dataRow = optionalDataRow.get();
-				
-			// Get coordinates from data row.
-			int posX = dataRow.getPosX();
-			int posY = dataRow.getPosY();
-			int posZ = dataRow.getPosZ();
-			
-			// Teleport player to coordinates.
-			player.teleportTo(serverLevel,posX,posY,posZ,yaw,pitch);
-			
-			return 1;
-			
-		} else {
+		// IF: Death location was not determined.
+		if(deathLocation == null) {
 			
 			// Create error message.
 			MutableComponent message = Component.literal(
@@ -92,6 +67,46 @@ public final class GravebackCommand {
 			return -1;
 		}
 		
+		// Get coordinates from data row.
+		int posX = deathLocation.getX();
+		int posY = deathLocation.getY();
+		int posZ = deathLocation.getZ();
+		
+		// Get dimension resource identifier.
+		String dimResId = deathLocation.getDimensionResId();
+		
+		// Get reference to Minecraft server
+		MinecraftServer server = player.getServer();
+		
+		// Convert dimension resource Id to Level.
+		ServerLevel serverLevel = LocationHelper.getLevel(server, dimResId);
+
+		// Teleport player.
+		boolean isTeleported = TeleportationHelper.teleportCommand(serverLevel, player, posX, posY, posZ);
+		
+		// IF: Teleportation was not successful.
+		if(!isTeleported) {
+			
+			// Create error message.
+			MutableComponent message = Component.literal(
+				"Teleportation to place of your demise has failed. :("
+			);
+				
+			// Send error message.
+			source.sendFailure(message);
+			
+			return -1;
+		}
+		
+		// Create message to be displayed in console.		
+		MutableComponent message = Component.literal(
+			"You have been returned to place of your death: " + posX + " " + posY + " " + posZ + ""
+		);
+
+		// Send message to console.
+		source.sendSuccess(() -> message, true);
+		
+		return 1;
 	
 	}
 	

@@ -5,7 +5,6 @@ import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,16 +13,11 @@ import org.mindrot.jbcrypt.BCrypt;
 import com.mojang.authlib.GameProfile;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
-import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataRow;
 import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataRow;
-import ba.minecraft.uniquecommands.common.core.data.PlayerDeathDataTable;
 import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataTable;
 import ba.minecraft.uniquecommands.common.core.models.LocationData;
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -33,7 +27,6 @@ import net.minecraft.world.level.storage.DimensionDataStorage;
 public final class PlayerManager {
 
 	private static final String SEENS_KEY = "seens";
-	private static final String DEATHS_KEY = "deaths";
 	
 	private static final Map<UUID, Long> teleports = 
 			new HashMap<UUID, Long>();
@@ -65,7 +58,7 @@ public final class PlayerManager {
 
 		// Cast level to ServerLevel (since it is not client side.
 		ServerLevel serverLevel = (ServerLevel)level;
-
+		
 		// Get UUID of player.
 		UUID playerId = player.getUUID();
 		
@@ -79,22 +72,22 @@ public final class PlayerManager {
 		PlayerSeenDataRow playerData = new PlayerSeenDataRow(LocalDateTime.now(), playerId, playerName);
 
 		// Get reference to server persistent data.
-		DimensionDataStorage storage = serverLevel.getDataStorage();
+		DimensionDataStorage dataStorage = ServerHelper.getServerStorage(serverLevel);
 
 		// Load players saved data.
-		PlayerSeenDataTable savedData = tryLoadPlayersSeenData(storage);
+		PlayerSeenDataTable savedData = tryLoadPlayersSeenData(dataStorage);
 
 		// Insert or update data for specific player.
 		savedData.upsertPlayerData(playerData);
 
 		// Save data to server.
-		storage.set(SEENS_KEY, savedData);
+		dataStorage.set(SEENS_KEY, savedData);
 	}		
 	
 	public static List<PlayerSeenDataRow> getSeen(ServerLevel serverLevel, String playerName) {
 		
 		// Get reference to level storage.
-		DimensionDataStorage dataStorage = serverLevel.getDataStorage();
+		DimensionDataStorage dataStorage = ServerHelper.getServerStorage(serverLevel);
 		
 		// Load players saved data.
 		PlayerSeenDataTable savedData = tryLoadPlayersSeenData(dataStorage);
@@ -121,116 +114,14 @@ public final class PlayerManager {
 		return savedData;
 	}
 	
-	private static PlayerDeathDataTable loadPlayerDeathsDataTable(DimensionDataStorage dataStorage) {
-
-		// Load saved deaths data table based on the key which is stored in deaths.dat file.
-		PlayerDeathDataTable dataTable = dataStorage.get(PlayerDeathDataTable.factory(), DEATHS_KEY);
-		
-		// IF: Data table was never saved before / it does not exist.
-		if(dataTable == null) {
-			
-			// Create data table for the first time and save it.
-			dataTable = PlayerDeathDataTable.create();
-		}
-		
-		// Return data table.
-		return dataTable;
-		
-	}
-	
-	public static void saveDeathData(Player player) {
-		
-		// Get reference to a level where player has died.
-		Level level = player.level();
-				
-		// IF: Code is executing on client side.
-		if (level.isClientSide()) {
-			
-			// Do nothing.
-			return;
-		}
-		
-		// Cast level to ServerLevel (since it is not client side).
-		ServerLevel serverLevel = (ServerLevel)level;
-
-		// Get UUID of player.
-		UUID playerId = player.getUUID();
-		
-		// Get resource key for the dimension of level.
-		ResourceKey<Level> dimension = level.dimension();
-		
-		// Get location of dimension resource.
-		ResourceLocation resLoc = dimension.location();
-		
-		// Get name of the dimension.
-		String dimName = resLoc.toString();
-		
-		// Get current position of player.
-		BlockPos playerPos = player.blockPosition();
-
-		// Get coordinates of current position.
-		int posX = playerPos.getX();
-		int posY = playerPos.getY();
-		int posZ = playerPos.getZ();
-		
-		// Create object that will hold information about player's death.
-		PlayerDeathDataRow dataRow = new PlayerDeathDataRow(playerId,dimName,posX,posY,posZ);
-		
-		// Get reference to server persistent data.
-		DimensionDataStorage dataStorage = serverLevel.getDataStorage();
-
-		// Load saved death data for all players.
-		PlayerDeathDataTable dataTable = loadPlayerDeathsDataTable(dataStorage);
-
-		// Insert or update data for specific player.
-		dataTable.upsertDataRow(dataRow);
-
-		// Save data to server.
-		dataStorage.set(DEATHS_KEY, dataTable);
+	public static void saveDeathData(ServerPlayer player) {
+		saveLocationData(player, "auto", "last_death");
 	}	
 	
-	public static Optional<PlayerDeathDataRow> loadDeathData(ServerLevel serverLevel, UUID playerId) {
-		
-		// Get reference to a level data storage.
-		DimensionDataStorage dataStorage = serverLevel.getDataStorage();
-		
-		// Load data table with deaths of all players.
-		PlayerDeathDataTable dataTable = loadPlayerDeathsDataTable(dataStorage);
-		
-		// Get data rows for all players.
-		List<PlayerDeathDataRow> dataRows = dataTable.getRows();
-		
-		// Try to find player by his ID.
-		Optional<PlayerDeathDataRow> searchResult =  dataRows.stream()
-					      .filter($row -> $row.getPlayerId().equals(playerId))
-					      .findFirst();
-		
-		// Return search result.
-		return searchResult;
+	public static LocationData loadDeathData(ServerPlayer player) {
+		return loadLocationData(player, "auto", "last_death");
 	}
-	
-	public static LocationData getPlayerLocation(ServerPlayer player) 
-	{
-		// Get position of lower player block.
-		BlockPos playerPos = player.blockPosition();
-		
-		// Get reference to level at which player is.
-		ServerLevel level = player.serverLevel();
-		
-		// Get resource key for the dimension of level.
-		ResourceKey<Level> dimension = level.dimension();
-		
-		// Get location of dimension resource.
-		ResourceLocation dimensionResLoc = dimension.location();
 
-		// Get dimension resource location identifier.
-		String dimensionResId = dimensionResLoc.toString();
-		
-		// Create location instance.
-		LocationData location = new LocationData(playerPos, dimensionResId);
-
-		return location;
-	}
 	
 	public static LocationData saveLocationData(ServerPlayer player, String locGroup, String locName) {
 
@@ -238,7 +129,7 @@ public final class PlayerManager {
 		CompoundTag data = player.getPersistentData();
 
 		// Get current location information for player.
-		LocationData location = getPlayerLocation(player);
+		LocationData location = LocationHelper.getPlayerLocation(player);
 
 		// Create key => uniquecommands:{locGroup}:{locName}
 		String key = getLocKey(locGroup, locName);

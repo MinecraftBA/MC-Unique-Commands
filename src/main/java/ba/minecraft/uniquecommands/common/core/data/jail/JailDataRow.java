@@ -1,26 +1,24 @@
-package ba.minecraft.uniquecommands.common.core.data;
-
-import java.util.UUID;
+package ba.minecraft.uniquecommands.common.core.data.jail;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 
-public final class PlayerDeathDataRow {
+public final class JailDataRow {
 	
-	private final static String UUID_KEY = "UUID";
+	private final static String NAME_KEY = "Name";
 	private final static String DIM_KEY = "Dim";
 	private final static String POS_X_KEY = "PosX";
 	private final static String POS_Y_KEY = "PosY";
 	private final static String POS_Z_KEY= "PosZ";
 	
-	private UUID playerId;
+	private String name;
 	private String dimension;
 	private int posX;
 	private int posY;
 	private int posZ;
 	
-	public PlayerDeathDataRow(UUID playerId, String dimension, int posX, int posY, int posZ) {
-		this.playerId = playerId;
+	public JailDataRow(String name, String dimension, int posX, int posY, int posZ) {
+		this.name = name;
 		this.dimension = dimension;
 		this.posX = posX;
 		this.posY = posY;
@@ -31,7 +29,7 @@ public final class PlayerDeathDataRow {
 		
 		CompoundTag compoundTag = new CompoundTag();
 		
-		compoundTag.putUUID(UUID_KEY, playerId);
+		compoundTag.putString(NAME_KEY, name);
 		compoundTag.putString(DIM_KEY,dimension);
 		compoundTag.putInt(POS_X_KEY, posX);
 		compoundTag.putInt(POS_Y_KEY, posY);
@@ -40,10 +38,10 @@ public final class PlayerDeathDataRow {
 		return compoundTag;
 	}
 	
-	public static PlayerDeathDataRow deserialize(CompoundTag compoundTag) {
+	public static JailDataRow deserialize(CompoundTag compoundTag) {
 
-		// Get player UUID.
-		UUID playerId = compoundTag.getUUID(UUID_KEY);
+		// Get jail name.
+		String name = compoundTag.getString(NAME_KEY);
 
 		// Get dimension name.
 		String dimension = compoundTag.getString(DIM_KEY);
@@ -55,13 +53,13 @@ public final class PlayerDeathDataRow {
 		int posZ = compoundTag.getInt(POS_Z_KEY);
 		
 		// Create new instance of saved data.
-		PlayerDeathDataRow dataRow = new PlayerDeathDataRow( playerId, dimension, posX, posY, posZ);
+		JailDataRow dataRow = new JailDataRow(name, dimension, posX, posY, posZ);
 		
 		return dataRow;
 	}
-
-	public UUID getPlayerId() {
-		return playerId;
+	
+	public String getName() {
+		return name;
 	}
 
 	public void setDimension(String dimension) {

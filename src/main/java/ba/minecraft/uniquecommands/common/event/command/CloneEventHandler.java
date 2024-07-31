@@ -44,7 +44,7 @@ public final class CloneEventHandler {
 	    for(String key : keys) {
 	    	
 	    	// IF: Key indicates it stored player home coordinates.
-	    	if(key.startsWith(UniqueCommandsMod.MODID + ":home:")) {
+	    	if(key.startsWith(UniqueCommandsMod.MODID + ":home:") || key.startsWith(UniqueCommandsMod.MODID + ":auto:")) {
 	    		
 	    		// IF: Key is for stored coordinates.
 	    		if(key.endsWith(":coords")) {

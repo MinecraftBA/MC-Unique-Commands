@@ -1,4 +1,4 @@
-package ba.minecraft.uniquecommands.common.core.data;
+package ba.minecraft.uniquecommands.common.core.data.jail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,70 +8,69 @@ import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
 
-public final class PlayerDeathDataTable extends SavedData {
+public class JailDataTable extends SavedData {
 
-	private static final String KEY = "Players";
+	private static final String KEY = "Jails";
 	
-	private final List<PlayerDeathDataRow> rows;
+	private final List<JailDataRow> rows;
 	
-	public PlayerDeathDataTable() {
-		this(new ArrayList<PlayerDeathDataRow>());
+	public JailDataTable() {
+		this(new ArrayList<JailDataRow>());
 	}
 	
-	public PlayerDeathDataTable(List<PlayerDeathDataRow> playersData) {
-		this.rows = playersData;
+	public JailDataTable(List<JailDataRow> jailsData) {
+		this.rows = jailsData;
 	}
 	
-	public static PlayerDeathDataTable create() {
-		return new PlayerDeathDataTable(new ArrayList<PlayerDeathDataRow>());
+	public static JailDataTable create() {
+		return new JailDataTable(new ArrayList<JailDataRow>());
 	}
 	
-    public static SavedData.Factory<PlayerDeathDataTable> factory() {
-		return new SavedData.Factory<>(PlayerDeathDataTable::new, PlayerDeathDataTable::load, DataFixTypes.PLAYER);
+    public static SavedData.Factory<JailDataTable> factory() {
+		return new SavedData.Factory<>(JailDataTable::new, JailDataTable::load, null);
 	}
 	
-	public static PlayerDeathDataTable load(CompoundTag compoundTag, Provider provider) {
+	public static JailDataTable load(CompoundTag compoundTag, Provider provider) {
 			
 		// Load list of NBTs from server data.
 		ListTag listTag = compoundTag.getList(KEY, Tag.TAG_COMPOUND);
 		
 		// Create new empty list that will hold all data.
-		ArrayList<PlayerDeathDataRow> dataRows = new ArrayList<PlayerDeathDataRow>();
+		ArrayList<JailDataRow> dataRows = new ArrayList<JailDataRow>();
 		
 		// Iterate through all NBTs.
 		for(Tag tag : listTag) {
 			
 			// Deserialize NBT back to regular object.
-			PlayerDeathDataRow dataRow = PlayerDeathDataRow.deserialize((CompoundTag)tag);
+			JailDataRow dataRow = JailDataRow.deserialize((CompoundTag)tag);
 			
 			// Add object to array of data.
 			dataRows.add(dataRow);
 		}
 		
 		// Create new instance of saved data class and provide data that was loaded to it.
-		return new PlayerDeathDataTable(dataRows);
+		return new JailDataTable(dataRows);
 	}
 	
-	public List<PlayerDeathDataRow> getRows(){
+	public List<JailDataRow> getRows(){
 		return this.rows;
 	}
 	
-	public void upsertDataRow(PlayerDeathDataRow newDataRow) {
+	public void upsertDataRow(JailDataRow newDataRow) {
 
 		// Find existing log of player seen data based on username and UUID.
-		Optional<PlayerDeathDataRow> searchResult = this.rows
+		Optional<JailDataRow> searchResult = this.rows
 				.stream()
-				.filter($p -> $p.getPlayerId().equals(newDataRow.getPlayerId()))
+				.filter($p -> $p.getName().equals(newDataRow.getName()))
 				.findFirst();
 
 		// IF: Log exists.
 		if(searchResult.isPresent()) {
 			
 			// Extract the log.
-			PlayerDeathDataRow existingDataRow = searchResult.get();
+			JailDataRow existingDataRow = searchResult.get();
 
 			existingDataRow.setBlockPos(newDataRow.getBlockPos());
 			
@@ -84,6 +83,19 @@ public final class PlayerDeathDataTable extends SavedData {
 		// Set data to be dirty as changes have been made.
 		this.setDirty();
 	}
+	
+	public boolean removeDataRow(String name) {
+
+		// Remove all rows that match he name.
+		boolean removed = this.rows
+				.removeIf($p -> $p.getName().equals(name));
+
+		// Mark dirtiness of data table.
+		this.setDirty(removed);
+		
+		return removed;
+		
+	}
 
 	@Override
 	public CompoundTag save(CompoundTag compoundTag, Provider pRegistries) {
@@ -92,13 +104,13 @@ public final class PlayerDeathDataTable extends SavedData {
 		ListTag listTag = new ListTag();
 		
 		// Iterate through all player data.
-		for(PlayerDeathDataRow dataRow : this.rows) {
+		for(JailDataRow dataRow : this.rows) {
 			
 			// Serialize player data to NBT.
-			CompoundTag playerTag = dataRow.serialize();
+			CompoundTag jailTag = dataRow.serialize();
 
 			// Add NBT to list.
-			listTag.add(playerTag);
+			listTag.add(jailTag);
 		}
 		
 		// Store all NBTs to server data.
@@ -108,4 +120,7 @@ public final class PlayerDeathDataTable extends SavedData {
 		return compoundTag;
 	}
 	
+	
+	
 }	
+

@@ -11,6 +11,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
+import ba.minecraft.uniquecommands.common.core.helper.TeleportationHelper;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -41,7 +42,7 @@ public class MeetCommand {
 	
 	private static int meet(CommandSourceStack source) throws CommandSyntaxException {
 		
-		if(!UniqueCommandsModConfig.MEET_ENABLED) {
+		if (!UniqueCommandsModConfig.MEET_ENABLED) {
 			// Create error message.
 			MutableComponent message = Component.literal(
 				"Command is not enabled. Hey, not my fault!"
@@ -107,6 +108,9 @@ public class MeetCommand {
 		// Create counter of summons.
 		int summonCount = 0;
 
+		// Create counter of total players online.
+		int totalCount = 0;
+		
 		// Iterate through all players.
 		for(ServerPlayer player : players) {
 			
@@ -119,25 +123,28 @@ public class MeetCommand {
 			// IF: player is not summoner.
 			if(playerId != summonerId) {
 
+				// Increase number of found players.
+				totalCount++;
+
 				// Save current location of player before teleporting with name such as: meeting_2023_09_09_23_15_00.
 				PlayerManager.saveLocationData(player, "home", "Meeting_" + timestamp);
 				
-				// Get current rotation of player.
-				float yaw = player.getYRot();
-				float pitch = player.getXRot();
-				
-				// Teleport player to summoner location.
-				player.teleportTo(level, x, y, z, yaw, pitch);
-				
-				// Increase counter of summons.
-				summonCount++;
+				// Teleport player to meeting location.
+				boolean isTeleported = TeleportationHelper.teleportCommand(level, player, x, y, z);
+
+				// IF: Teleportation was successful.
+				if (isTeleported) {
+					
+					// Increase counter of summons.
+					summonCount++;
+				}
 			}
 			
 		}
 		
 		// Create message to be displayed in console.		
 		MutableComponent message = Component.literal(
-			summonCount + " player(s) have joined your meeting."
+			summonCount + " of " + totalCount + " online player(s) have joined your meeting."
 		);
 		
 		// Send message to console.

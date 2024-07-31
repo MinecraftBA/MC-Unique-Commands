@@ -57,22 +57,17 @@ public class TpDownCommand {
 		int y = playerPos.getY();
 		int z = playerPos.getZ();
 		
-		// Get player's current rotation.
-		float yaw = player.getYRot();
-		float pitch = player.getXRot();
-
 		// Iterate through all blocks from player's current position to world bottom.
 		for(int i=y-3; i > -64; i--) {
 			
-			// Get position of block above.
-			BlockPos blockPos = new BlockPos(x,i,z);
+			// Teleport player to location.
+			boolean isTeleported = TeleportationHelper.teleportCommand(level, player, x, i, z);
 
-			// IF: Location is safe for teleportation.
-			if(TeleportationHelper.isSafe(level, blockPos)) {
-				
-				// Teleport player.
-	    		player.teleportTo(level, x, i, z, yaw, pitch);
-	    		return 1;
+			// IF: Teleportation was successful.
+			if (isTeleported) {
+
+				// Indicate success.
+				return 1;
 			}
   			
 		}
