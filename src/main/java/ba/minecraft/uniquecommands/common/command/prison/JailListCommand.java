@@ -1,5 +1,6 @@
 package ba.minecraft.uniquecommands.common.command.prison;
 
+import java.util.List;
 import java.util.Set;
 
 import com.mojang.brigadier.CommandDispatcher;
@@ -7,11 +8,14 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
+import ba.minecraft.uniquecommands.common.core.data.jail.JailDataRow;
+import ba.minecraft.uniquecommands.common.core.helper.JailManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
 public final class JailListCommand {
@@ -27,7 +31,7 @@ public final class JailListCommand {
 					.executes(
 						(context) -> {
 							CommandSourceStack source = context.getSource();
-							return listHome(source);
+							return listJails(source);
 						}
 					)
 				)
@@ -35,7 +39,7 @@ public final class JailListCommand {
 		
 	}
 	
-	private static int listHome(CommandSourceStack source) throws CommandSyntaxException {
+	private static int listJails(CommandSourceStack source) throws CommandSyntaxException {
 		if(!UniqueCommandsModConfig.JAIL_ENABLED) {
 			// Create error message.
 			MutableComponent message = Component.literal(
@@ -47,46 +51,25 @@ public final class JailListCommand {
 
 			return -1;
 		}
-		// Get reference to player that has typed the command.
-		ServerPlayer player = source.getPlayerOrException();
 		
-		// Get reference to personal persistent data of player.
-		CompoundTag data = player.getPersistentData();
-
-		// Get list of all keys for stored data.
-		Set<String> keys = data.getAllKeys();
+		ServerLevel level = source.getLevel();
 		
-		for(String key : keys) {
-
-			if(key.startsWith(UniqueCommandsMod.MODID + ":jail:") && key.endsWith(":coords")) {
-
-				String locName = key.replace(":coords", "")
-									.replace(UniqueCommandsMod.MODID + ":jail:", "");
-				
-				int[] coordinates = data.getIntArray(key);
-
-				// Extract coordinates from array.
-				int x = coordinates[0];
-				int y = coordinates[1];
-				int z = coordinates[2];
-
-				String resLocId = data.getString(UniqueCommandsMod.MODID + ":jail:" + locName + ":dim")
-						.replace("minecraft:", ""); // Remove minecraft: prefix from location for better displaying.
-				
+		List<JailDataRow> dataRows = JailManager.getJails(level);
+		
+		for(JailDataRow dataRow : dataRows) {
+			
 				// Send confirmation message.
 				source.sendSuccess(() -> {
 
 					// Create success message.
 					MutableComponent message = Component.translatable(
-							"Jail " + locName + " is set to: " + x + " " + y + " " + z + " (" + resLocId + ")"
+							"Jail " + dataRow.getName() + " is set to: " + dataRow.getPosX() + " " + dataRow.getPosY() + " " + dataRow.getPosZ() + " (" + dataRow.getDimension() + ")"
 					);
 					
 					return message;
 					
 				}, true);
 				
-			}
-			
 		}
 
 		// Return success code.

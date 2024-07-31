@@ -9,6 +9,7 @@ import ba.minecraft.uniquecommands.common.command.home.HomeListCommand;
 import ba.minecraft.uniquecommands.common.command.home.HomeReturnCommand;
 import ba.minecraft.uniquecommands.common.command.home.HomeSetCommand;
 import ba.minecraft.uniquecommands.common.command.meet.MeetCommand;
+import ba.minecraft.uniquecommands.common.command.prison.JailListCommand;
 import ba.minecraft.uniquecommands.common.command.prison.JailSetCommand;
 import ba.minecraft.uniquecommands.common.command.roll.RollCommand;
 import ba.minecraft.uniquecommands.common.command.seen.SeenCommand;
@@ -35,6 +36,7 @@ public final class RegisterCommandsEventHandler {
 		HomeDeleteCommand.register(event.getDispatcher());
 		
 		JailSetCommand.register(event.getDispatcher());
+		JailListCommand.register(event.getDispatcher());
 		
 		SeenCommand.register(event.getDispatcher());
 		WhereCommand.register(event.getDispatcher());
