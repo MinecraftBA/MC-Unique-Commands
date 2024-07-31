@@ -6,11 +6,13 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
+import ba.minecraft.uniquecommands.common.core.helper.JailManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
 public class JailRemoveCommand {
@@ -50,24 +52,13 @@ public class JailRemoveCommand {
 
 			return -1;
 		}
-		// Get reference to a player that called the command.
-		ServerPlayer player = source.getPlayerOrException();
-		
-		// Get reference to player's persistent data.
-		CompoundTag data = player.getPersistentData();
-
-		// Create key => uniquecommands:home:...
-		String key = UniqueCommandsMod.MODID + ":jail:" + locName;
-		
-		String coordsKey = key + ":coords";
-		String dimKey = key + ":dim";
-		
+		ServerLevel level = source.getLevel();
+		boolean exists = locName != null;
 		// IF: Entries were found in persistent data = location was saved previously.
-		if(data.contains(coordsKey) && data.contains(dimKey)) {
+		if(exists) {
 
 			// Remove entries.
-			data.remove(coordsKey);
-			data.remove(dimKey);
+			JailManager.removeJail(null, locName);
 			
 			source.sendSuccess(() -> {
 

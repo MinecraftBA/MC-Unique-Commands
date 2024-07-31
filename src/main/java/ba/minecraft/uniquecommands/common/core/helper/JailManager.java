@@ -88,4 +88,14 @@ public class JailManager {
 		return data;
 	}
 	
+	public static boolean removeJail(ServerLevel level, String name) {
+		boolean isRemoved = removeJail(level, name);
+		if(!isRemoved) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	
 }

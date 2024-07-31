@@ -83,6 +83,31 @@ public class JailDataTable extends SavedData {
 		// Set data to be dirty as changes have been made.
 		this.setDirty();
 	}
+	
+	public boolean removeDataRow(String name) {
+
+		// Find existing log of player seen data based on username and UUID.
+		Optional<JailDataRow> searchResult = this.rows
+				.stream()
+				.filter($p -> $p.getName().equals(name))
+				.findFirst();
+
+		// IF: Log exists.
+		if(searchResult.isPresent()) {
+			
+			// Extract the log.
+			JailDataRow existingDataRow = searchResult.get();
+			
+			this.rows.remove(existingDataRow);
+			
+			// Set data to be dirty as changes have been made.
+			this.setDirty();
+			return true;
+		} else {
+			return false;
+		}
+
+	}
 
 	@Override
 	public CompoundTag save(CompoundTag compoundTag, Provider pRegistries) {
@@ -106,6 +131,8 @@ public class JailDataTable extends SavedData {
 		// Return server data back for further processing.
 		return compoundTag;
 	}
+	
+	
 	
 }	
 
