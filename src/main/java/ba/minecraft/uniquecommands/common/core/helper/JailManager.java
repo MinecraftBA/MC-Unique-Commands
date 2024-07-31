@@ -6,10 +6,7 @@ import java.util.Optional;
 import ba.minecraft.uniquecommands.common.core.data.jail.JailDataRow;
 import ba.minecraft.uniquecommands.common.core.data.jail.JailDataTable;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 
 public class JailManager {
@@ -35,33 +32,27 @@ public class JailManager {
 	
 	public static void setJail(ServerLevel level, String name, BlockPos blockPos) {
 				
-		// Get resource key for the dimension of level.
-		ResourceKey<Level> dimension = level.dimension();
-		
-		// Get location of dimension resource.
-		ResourceLocation resLoc = dimension.location();
-		
-		// Get name of the dimension.
-		String dimName = resLoc.toString();
+		// Get resource ID of the dimension.
+		String dimensionResId = LocationHelper.getDimensionId(level);
 		
 		int x = blockPos.getX();
 		int y = blockPos.getY();
 		int z = blockPos.getZ();
 		
 		// Create saved data.
-		JailDataRow jailData = new JailDataRow(name, dimName, x, y, z);
+		JailDataRow jailData = new JailDataRow(name, dimensionResId, x, y, z);
 
 		// Get reference to server persistent data.
 		DimensionDataStorage storage = ServerHelper.getDataStorage(level);
 
 		// Load players saved data.
-		JailDataTable savedData = loadJailDataTable(storage);
+		JailDataTable dataTable = loadJailDataTable(storage);
 
 		// Insert or update data for specific jail.
-		savedData.upsertDataRow(jailData);
+		dataTable.upsertDataRow(jailData);
 
 		// Save data to server.
-		storage.set(JAILS_KEY, savedData);
+		storage.set(JAILS_KEY, dataTable);
 	}
 	
 	

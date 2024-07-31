@@ -10,10 +10,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import ba.minecraft.uniquecommands.common.core.data.jail.JailDataRow;
 import ba.minecraft.uniquecommands.common.core.helper.JailManager;
-import ba.minecraft.uniquecommands.common.core.helper.LocationHelper;
-import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
 import ba.minecraft.uniquecommands.common.core.helper.TeleportationHelper;
-import ba.minecraft.uniquecommands.common.core.models.LocationData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -40,9 +37,9 @@ public final class JailSendCommand {
 										.executes(
 											(context) -> {
 												CommandSourceStack source = context.getSource();
+												String name = StringArgumentType.getString(context, "name");
 												String playerName = StringArgumentType.getString(context, "player");
-												String jailName = StringArgumentType.getString(context, "name");
-												return sendJail(source, playerName, jailName);
+												return sendJail(source, name, playerName);
 											}
 										)
 								)
@@ -53,7 +50,8 @@ public final class JailSendCommand {
 		
 	}
 	
-	private static int sendJail(CommandSourceStack source, String playerName, String name) throws CommandSyntaxException {
+	private static int sendJail(CommandSourceStack source, String name, String playerName) throws CommandSyntaxException {
+
 		if(!UniqueCommandsModConfig.JAIL_ENABLED) {
 			// Create error message.
 			MutableComponent message = Component.literal(
@@ -65,12 +63,15 @@ public final class JailSendCommand {
 
 			return -1;
 		}
+		
+		// Get reference to a level where command was issued.
 		ServerLevel level = source.getLevel();
-		// Load location data from player persistance data.
+
+		// Try get previously saved jail.
 		Optional<JailDataRow> optionalJail = JailManager.getJail(level, name);
 		
-		// IF: Location could not be determined.
-		if (optionalJail == null) {
+		// IF: Jail was not previously saved..
+		if (!optionalJail.isPresent()) {
 			
 			// Create error message.
 			MutableComponent message = Component.literal(
@@ -84,6 +85,7 @@ public final class JailSendCommand {
 			return -1;
 		}
 		
+		// Get reference to jail.
 		JailDataRow jail = optionalJail.get();
 		
 		// Get reference to server where code is running.
@@ -95,15 +97,17 @@ public final class JailSendCommand {
 		// Get array of players on the server.
 		List<ServerPlayer> players = playerList.getPlayers();
 		
+		// Try locating player by name.
 		Optional<ServerPlayer> optionalPlayer =	players.stream()
 									      .filter(p -> p.getGameProfile().getName().contentEquals(playerName))
 									      .findFirst();
-		// IF: Location could not be determined.
-		if (optionalPlayer == null) {
+
+		// IF: Player was not online.
+		if (!optionalPlayer.isPresent()) {
 			
 			// Create error message.
 			MutableComponent message = Component.literal(
-					"Player with the name " + optionalPlayer + " is not online"
+					"Player with the name " + playerName + " is not online"
 			);
 			
 			// Send error message.
@@ -113,15 +117,18 @@ public final class JailSendCommand {
 			return -1;
 		}
 		
+		// Get reference to player.
 		ServerPlayer player = optionalPlayer.get();
 		
-		boolean isTped = TeleportationHelper.teleportCommand(level, player, jail.getPosX(), jail.getPosY(), jail.getPosZ());
+		// Try teleporting player to jail.
+		boolean isTeleported = TeleportationHelper.teleportCommand(level, player, jail.getPosX(), jail.getPosY(), jail.getPosZ());
 		
-		if(!isTped) {
+		// IF: There was error teleporting player.
+		if(!isTeleported) {
 			
 			// Create error message.
 			MutableComponent message = Component.literal(
-					"Player with the name " + optionalPlayer + " was not teleported"
+					"Player with the name " + playerName + " was not teleported to jail named " + name + "."
 			);
 			
 			// Send error message.

@@ -6,8 +6,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import ba.minecraft.uniquecommands.common.core.helper.JailManager;
-import ba.minecraft.uniquecommands.common.core.helper.PlayerManager;
-import ba.minecraft.uniquecommands.common.core.models.LocationData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -31,8 +29,8 @@ public class JailSetCommand {
 							.executes(
 								(context) -> {
 									CommandSourceStack source = context.getSource();
-									String locName = StringArgumentType.getString(context, "name");
-									return setJail(source, locName);
+									String name = StringArgumentType.getString(context, "name");
+									return setJail(source, name);
 								}
 							)
 
@@ -41,7 +39,7 @@ public class JailSetCommand {
 		);
 	}
 	
-	private static int setJail(CommandSourceStack source, String locName) throws CommandSyntaxException {
+	private static int setJail(CommandSourceStack source, String name) throws CommandSyntaxException {
 			
 			if(!UniqueCommandsModConfig.JAIL_ENABLED) {
 				// Create error message.
@@ -55,19 +53,21 @@ public class JailSetCommand {
 				return -1;
 			}
 			
-			// Get reference to player that has typed the command.
-			ServerPlayer player = source.getPlayerOrException();
-			
+			// Get reference to a level where command was executed.
 			ServerLevel level = source.getLevel();
 			
+			// Get reference to player that has typed the command.
+			ServerPlayer player = source.getPlayerOrException();
+
+			// Get position where player is standing.
 			BlockPos blockPos = player.blockPosition();
 			
 			// Save current location to jail data.
-			JailManager.setJail(level, locName, blockPos);
+			JailManager.setJail(level, name, blockPos);
 	
 			// Create message to be displayed in console.		
 			MutableComponent message = Component.literal(
-				"Jail " + locName + " is set to: " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ() + ""
+				"Jail " + name + " is set to: " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ() + ""
 			);
 	
 			// Send message to console.

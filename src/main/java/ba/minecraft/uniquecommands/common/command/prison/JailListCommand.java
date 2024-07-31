@@ -1,22 +1,17 @@
 package ba.minecraft.uniquecommands.common.command.prison;
 
 import java.util.List;
-import java.util.Set;
-
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import ba.minecraft.uniquecommands.common.core.data.jail.JailDataRow;
 import ba.minecraft.uniquecommands.common.core.helper.JailManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 
 public final class JailListCommand {
 
@@ -40,6 +35,7 @@ public final class JailListCommand {
 	}
 	
 	private static int listJails(CommandSourceStack source) throws CommandSyntaxException {
+
 		if(!UniqueCommandsModConfig.JAIL_ENABLED) {
 			// Create error message.
 			MutableComponent message = Component.literal(
@@ -52,23 +48,26 @@ public final class JailListCommand {
 			return -1;
 		}
 		
+		// Get reference to a level where command was issued.
 		ServerLevel level = source.getLevel();
 		
+		// Get list of all previously saved jails.
 		List<JailDataRow> dataRows = JailManager.getJails(level);
 		
+		// Iterate throw jails.
 		for(JailDataRow dataRow : dataRows) {
 			
-				// Send confirmation message.
-				source.sendSuccess(() -> {
+			// Send confirmation message.
+			source.sendSuccess(() -> {
 
-					// Create success message.
-					MutableComponent message = Component.translatable(
-							"Jail " + dataRow.getName() + " is set to: " + dataRow.getPosX() + " " + dataRow.getPosY() + " " + dataRow.getPosZ() + " (" + dataRow.getDimension() + ")"
-					);
-					
-					return message;
-					
-				}, true);
+				// Create success message.
+				MutableComponent message = Component.translatable(
+						"Jail " + dataRow.getName() + " is set to: " + dataRow.getPosX() + " " + dataRow.getPosY() + " " + dataRow.getPosZ() + " (" + dataRow.getDimension() + ")"
+				);
+				
+				return message;
+				
+			}, true);
 				
 		}
 
