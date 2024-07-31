@@ -17,10 +17,7 @@ import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataRow;
 import ba.minecraft.uniquecommands.common.core.data.PlayerSeenDataTable;
 import ba.minecraft.uniquecommands.common.core.models.LocationData;
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -75,7 +72,7 @@ public final class PlayerManager {
 		PlayerSeenDataRow playerData = new PlayerSeenDataRow(LocalDateTime.now(), playerId, playerName);
 
 		// Get reference to server persistent data.
-		DimensionDataStorage dataStorage = ServerHelper.getDataStorage(serverLevel);
+		DimensionDataStorage dataStorage = ServerHelper.getServerStorage(serverLevel);
 
 		// Load players saved data.
 		PlayerSeenDataTable savedData = tryLoadPlayersSeenData(dataStorage);
@@ -90,7 +87,7 @@ public final class PlayerManager {
 	public static List<PlayerSeenDataRow> getSeen(ServerLevel serverLevel, String playerName) {
 		
 		// Get reference to level storage.
-		DimensionDataStorage dataStorage = ServerHelper.getDataStorage(serverLevel);
+		DimensionDataStorage dataStorage = ServerHelper.getServerStorage(serverLevel);
 		
 		// Load players saved data.
 		PlayerSeenDataTable savedData = tryLoadPlayersSeenData(dataStorage);
@@ -124,29 +121,7 @@ public final class PlayerManager {
 	public static LocationData loadDeathData(ServerPlayer player) {
 		return loadLocationData(player, "auto", "last_death");
 	}
-	
-	public static LocationData getPlayerLocation(ServerPlayer player) 
-	{
-		// Get position of lower player block.
-		BlockPos playerPos = player.blockPosition();
-		
-		// Get reference to level at which player is.
-		ServerLevel level = player.serverLevel();
-		
-		// Get resource key for the dimension of level.
-		ResourceKey<Level> dimension = level.dimension();
-		
-		// Get location of dimension resource.
-		ResourceLocation dimensionResLoc = dimension.location();
 
-		// Get dimension resource location identifier.
-		String dimensionResId = dimensionResLoc.toString();
-		
-		// Create location instance.
-		LocationData location = new LocationData(playerPos, dimensionResId);
-
-		return location;
-	}
 	
 	public static LocationData saveLocationData(ServerPlayer player, String locGroup, String locName) {
 
@@ -154,7 +129,7 @@ public final class PlayerManager {
 		CompoundTag data = player.getPersistentData();
 
 		// Get current location information for player.
-		LocationData location = getPlayerLocation(player);
+		LocationData location = LocationHelper.getPlayerLocation(player);
 
 		// Create key => uniquecommands:{locGroup}:{locName}
 		String key = getLocKey(locGroup, locName);

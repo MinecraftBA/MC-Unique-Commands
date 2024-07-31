@@ -5,7 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
-import ba.minecraft.uniquecommands.common.core.helper.JailManager;
+import ba.minecraft.uniquecommands.common.core.helper.JailsManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -63,7 +63,7 @@ public class JailSetCommand {
 			BlockPos blockPos = player.blockPosition();
 			
 			// Save current location to jail data.
-			JailManager.setJail(level, name, blockPos);
+			JailsManager.setJail(level, name, blockPos);
 	
 			// Create message to be displayed in console.		
 			MutableComponent message = Component.literal(

@@ -6,7 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import ba.minecraft.uniquecommands.common.core.data.jail.JailDataRow;
-import ba.minecraft.uniquecommands.common.core.helper.JailManager;
+import ba.minecraft.uniquecommands.common.core.helper.JailsManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -52,7 +52,7 @@ public final class JailListCommand {
 		ServerLevel level = source.getLevel();
 		
 		// Get list of all previously saved jails.
-		List<JailDataRow> dataRows = JailManager.getJails(level);
+		List<JailDataRow> dataRows = JailsManager.getJails(level);
 		
 		// Iterate throw jails.
 		for(JailDataRow dataRow : dataRows) {

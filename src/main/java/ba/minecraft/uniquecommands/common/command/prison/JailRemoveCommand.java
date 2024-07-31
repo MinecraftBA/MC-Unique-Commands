@@ -5,7 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
-import ba.minecraft.uniquecommands.common.core.helper.JailManager;
+import ba.minecraft.uniquecommands.common.core.helper.JailsManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -55,7 +55,7 @@ public class JailRemoveCommand {
 		ServerLevel level = source.getLevel();
 
 		// Try to remove jail.
-		boolean isRemoved = JailManager.removeJail(level, name);
+		boolean isRemoved = JailsManager.removeJail(level, name);
 
 		// IF: Jail was not removed.
 		if(!isRemoved) {

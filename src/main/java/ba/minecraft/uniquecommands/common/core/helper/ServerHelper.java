@@ -22,7 +22,7 @@ public final class ServerHelper {
         return false;
 	}
 	
-	public static DimensionDataStorage getDataStorage(ServerLevel level) {
+	public static DimensionDataStorage getServerStorage(ServerLevel level) {
 		
 		// Get reference to running instance of Minecraft server.
 		MinecraftServer server = level.getServer();

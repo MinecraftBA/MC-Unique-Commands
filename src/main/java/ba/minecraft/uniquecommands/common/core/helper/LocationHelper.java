@@ -1,10 +1,13 @@
 package ba.minecraft.uniquecommands.common.core.helper;
 
+import ba.minecraft.uniquecommands.common.core.models.LocationData;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 
 public final class LocationHelper {
@@ -23,7 +26,7 @@ public final class LocationHelper {
 		return level;
 	}
 	
-	public static String getDimensionId(ServerLevel level) {
+	public static String getDimensionResId(ServerLevel level) {
 
 		// Get resource key for the dimension of level.
 		ResourceKey<Level> dimension = level.dimension();
@@ -35,5 +38,22 @@ public final class LocationHelper {
 		String dimId = resLoc.toString();
 		
 		return dimId;
+	}
+	
+	public static LocationData getPlayerLocation(ServerPlayer player) 
+	{
+		// Get position of lower player block.
+		BlockPos playerPos = player.blockPosition();
+		
+		// Get reference to level at which player is.
+		ServerLevel level = player.serverLevel();
+		
+		// Get dimension resource location identifier.
+		String dimensionResId = getDimensionResId(level);
+		
+		// Create location instance.
+		LocationData location = new LocationData(playerPos, dimensionResId);
+
+		return location;
 	}
 }

@@ -9,7 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 
-public class JailManager {
+public class JailsManager {
 	
 	private static final String JAILS_KEY = "jails";
 	
@@ -33,13 +33,13 @@ public class JailManager {
 	public static void setJail(ServerLevel level, String name, BlockPos blockPos) {
 				
 		// Get resource ID of the dimension.
-		String dimensionResId = LocationHelper.getDimensionId(level);
+		String dimensionResId = LocationHelper.getDimensionResId(level);
 		
 		// Create jail data row.
 		JailDataRow jailData = new JailDataRow(name, dimensionResId, blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
 		// Get reference to server storage.
-		DimensionDataStorage storage = ServerHelper.getDataStorage(level);
+		DimensionDataStorage storage = ServerHelper.getServerStorage(level);
 
 		// Load players saved data.
 		JailDataTable dataTable = loadJailDataTable(storage);
@@ -55,7 +55,7 @@ public class JailManager {
 	public static Optional<JailDataRow> getJail(ServerLevel serverLevel, String name) {
 		
 		// Get reference to server storage.
-		DimensionDataStorage dataStorage = ServerHelper.getDataStorage(serverLevel);
+		DimensionDataStorage dataStorage = ServerHelper.getServerStorage(serverLevel);
 		
 		// Load data table with jails.
 		JailDataTable dataTable = loadJailDataTable(dataStorage);
@@ -73,7 +73,7 @@ public class JailManager {
 	public static List<JailDataRow> getJails(ServerLevel serverLevel) {
 		
 		// Get reference to server storage.
-		DimensionDataStorage dataStorage = ServerHelper.getDataStorage(serverLevel);
+		DimensionDataStorage dataStorage = ServerHelper.getServerStorage(serverLevel);
 		
 		// Load data table with jails.
 		JailDataTable dataTable = loadJailDataTable(dataStorage);
@@ -87,7 +87,7 @@ public class JailManager {
 	public static boolean removeJail(ServerLevel level, String name) {
 
 		// Get reference to server storage.
-		DimensionDataStorage dataStorage = ServerHelper.getDataStorage(level);
+		DimensionDataStorage dataStorage = ServerHelper.getServerStorage(level);
 		
 		// Load data table with jails.
 		JailDataTable dataTable = loadJailDataTable(dataStorage);

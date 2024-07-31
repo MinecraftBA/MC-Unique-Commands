@@ -9,7 +9,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import ba.minecraft.uniquecommands.common.core.data.jail.JailDataRow;
-import ba.minecraft.uniquecommands.common.core.helper.JailManager;
+import ba.minecraft.uniquecommands.common.core.helper.JailsManager;
 import ba.minecraft.uniquecommands.common.core.helper.TeleportationHelper;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -68,7 +68,7 @@ public final class JailSendCommand {
 		ServerLevel level = source.getLevel();
 
 		// Try get previously saved jail.
-		Optional<JailDataRow> optionalJail = JailManager.getJail(level, name);
+		Optional<JailDataRow> optionalJail = JailsManager.getJail(level, name);
 		
 		// IF: Jail was not previously saved..
 		if (!optionalJail.isPresent()) {
