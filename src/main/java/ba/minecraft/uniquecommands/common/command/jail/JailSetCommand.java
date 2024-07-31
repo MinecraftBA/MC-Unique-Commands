@@ -1,4 +1,4 @@
-package ba.minecraft.uniquecommands.common.command.prison;
+package ba.minecraft.uniquecommands.common.command.jail;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;

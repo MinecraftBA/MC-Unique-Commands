@@ -1,4 +1,4 @@
-package ba.minecraft.uniquecommands.common.command.prison;
+package ba.minecraft.uniquecommands.common.command.jail;
 
 import java.util.List;
 import java.util.Optional;

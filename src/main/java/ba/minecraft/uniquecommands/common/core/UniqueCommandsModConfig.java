@@ -135,7 +135,7 @@ public final class UniqueCommandsModConfig {
 	            .define("Jail enabled", true);
     	
     	JAIL_OP_LEVEL_CONFIG = BUILDER.comment("Defines what op level /jail commands requires.")
-	            .defineInRange("Jail OP level", 0, 0, 4);
+	            .defineInRange("Jail OP level", 3, 0, 4);
 
     	BUILDER.pop();
     	
