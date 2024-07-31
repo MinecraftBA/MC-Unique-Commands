@@ -86,27 +86,15 @@ public class JailDataTable extends SavedData {
 	
 	public boolean removeDataRow(String name) {
 
-		// Find existing log of player seen data based on username and UUID.
-		Optional<JailDataRow> searchResult = this.rows
-				.stream()
-				.filter($p -> $p.getName().equals(name))
-				.findFirst();
+		// Remove all rows that match he name.
+		boolean removed = this.rows
+				.removeIf($p -> $p.getName().equals(name));
 
-		// IF: Log exists.
-		if(searchResult.isPresent()) {
-			
-			// Extract the log.
-			JailDataRow existingDataRow = searchResult.get();
-			
-			this.rows.remove(existingDataRow);
-			
-			// Set data to be dirty as changes have been made.
-			this.setDirty();
-			return true;
-		} else {
-			return false;
-		}
-
+		// Mark dirtiness of data table.
+		this.setDirty(removed);
+		
+		return removed;
+		
 	}
 
 	@Override

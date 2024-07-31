@@ -4,16 +4,13 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import ba.minecraft.uniquecommands.common.core.UniqueCommandsMod;
 import ba.minecraft.uniquecommands.common.core.UniqueCommandsModConfig;
 import ba.minecraft.uniquecommands.common.core.helper.JailManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 
 public class JailRemoveCommand {
 	
@@ -30,8 +27,8 @@ public class JailRemoveCommand {
 								.executes(
 									(context) -> {
 										CommandSourceStack source = context.getSource();
-										String locName = StringArgumentType.getString(context, "name");
-										return deleteJail(source, locName);
+										String name = StringArgumentType.getString(context, "name");
+										return deleteJail(source, name);
 									}
 								)
 
@@ -40,7 +37,8 @@ public class JailRemoveCommand {
 			);
 	}
 	
-	private static int deleteJail(CommandSourceStack source,String locName) throws CommandSyntaxException {
+	private static int deleteJail(CommandSourceStack source,String name) throws CommandSyntaxException {
+
 		if(!UniqueCommandsModConfig.JAIL_ENABLED) {
 			// Create error message.
 			MutableComponent message = Component.literal(
@@ -52,34 +50,35 @@ public class JailRemoveCommand {
 
 			return -1;
 		}
+		
+		// Get reference to level where command was issued.
 		ServerLevel level = source.getLevel();
-		boolean exists = locName != null;
-		// IF: Entries were found in persistent data = location was saved previously.
-		if(exists) {
 
-			// Remove entries.
-			JailManager.removeJail(null, locName);
+		// Try to remove jail.
+		boolean isRemoved = JailManager.removeJail(level, name);
+
+		// IF: Jail was not removed.
+		if(!isRemoved) {
 			
-			source.sendSuccess(() -> {
-
-				MutableComponent message = Component.literal(
-						"Jail " + locName + " was deleted."
-				);
-
-				return message;
-				
-			}, true);
-			
-			return 1;
-		} else {
-
 			MutableComponent message = Component.literal(
-				"Jail " + locName + " was not found!"
+				"Jail " + name + " was not found!"
 			);
 			
 			source.sendFailure(message);
 			
 			return -1;
 		}
+		
+		source.sendSuccess(() -> {
+
+			MutableComponent message = Component.literal(
+				"Jail " + name + " was deleted."
+			);
+
+			return message;
+			
+		}, true);
+		
+		return 1;
 	}
 }

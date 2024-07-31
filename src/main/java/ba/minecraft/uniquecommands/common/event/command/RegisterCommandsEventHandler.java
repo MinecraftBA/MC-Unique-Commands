@@ -38,9 +38,9 @@ public final class RegisterCommandsEventHandler {
 		HomeDeleteCommand.register(event.getDispatcher());
 		
 		JailSetCommand.register(event.getDispatcher());
+		JailRemoveCommand.register(event.getDispatcher());
 		JailListCommand.register(event.getDispatcher());
 		JailSendCommand.register(event.getDispatcher());
-		JailRemoveCommand.register(event.getDispatcher());
 		
 		SeenCommand.register(event.getDispatcher());
 		WhereCommand.register(event.getDispatcher());
