@@ -35,14 +35,10 @@ public class JailManager {
 		// Get resource ID of the dimension.
 		String dimensionResId = LocationHelper.getDimensionId(level);
 		
-		int x = blockPos.getX();
-		int y = blockPos.getY();
-		int z = blockPos.getZ();
-		
-		// Create saved data.
-		JailDataRow jailData = new JailDataRow(name, dimensionResId, x, y, z);
+		// Create jail data row.
+		JailDataRow jailData = new JailDataRow(name, dimensionResId, blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
-		// Get reference to server persistent data.
+		// Get reference to server storage.
 		DimensionDataStorage storage = ServerHelper.getDataStorage(level);
 
 		// Load players saved data.
@@ -51,21 +47,21 @@ public class JailManager {
 		// Insert or update data for specific jail.
 		dataTable.upsertDataRow(jailData);
 
-		// Save data to server.
+		// Save data table to server.
 		storage.set(JAILS_KEY, dataTable);
 	}
 	
 	
 	public static Optional<JailDataRow> getJail(ServerLevel serverLevel, String name) {
 		
-		// Get reference to level storage.
+		// Get reference to server storage.
 		DimensionDataStorage dataStorage = ServerHelper.getDataStorage(serverLevel);
 		
-		// Load players saved data.
-		JailDataTable savedData = loadJailDataTable(dataStorage);
+		// Load data table with jails.
+		JailDataTable dataTable = loadJailDataTable(dataStorage);
 		
 		// Get data for all jails.
-		List<JailDataRow> data = savedData.getRows();
+		List<JailDataRow> data = dataTable.getRows();
 		
 		// Return only jails that match the jail name.
 		Optional<JailDataRow> dataRow = data.stream()
@@ -76,26 +72,37 @@ public class JailManager {
 	
 	public static List<JailDataRow> getJails(ServerLevel serverLevel) {
 		
-		// Get reference to level storage.
+		// Get reference to server storage.
 		DimensionDataStorage dataStorage = ServerHelper.getDataStorage(serverLevel);
 		
-		// Load players saved data.
-		JailDataTable savedData = loadJailDataTable(dataStorage);
+		// Load data table with jails.
+		JailDataTable dataTable = loadJailDataTable(dataStorage);
 		
 		// Get data for all jails.
-		List<JailDataRow> data = savedData.getRows();
+		List<JailDataRow> data = dataTable.getRows();
 		
 		return data;
 	}
 	
 	public static boolean removeJail(ServerLevel level, String name) {
-		boolean isRemoved = removeJail(level, name);
-		if(!isRemoved) {
-			return false;
-		} else {
-			return true;
+
+		// Get reference to server storage.
+		DimensionDataStorage dataStorage = ServerHelper.getDataStorage(level);
+		
+		// Load data table with jails.
+		JailDataTable dataTable = loadJailDataTable(dataStorage);
+		
+		// Remove data row with specified jail name.
+		boolean isRemoved = dataTable.removeDataRow(name);
+
+		// IF: Row was removed.
+		if(isRemoved) {
+			
+			// Save data table to server.
+			dataStorage.set(JAILS_KEY, dataTable);
 		}
+
+		return isRemoved;
 	}
-	
 	
 }

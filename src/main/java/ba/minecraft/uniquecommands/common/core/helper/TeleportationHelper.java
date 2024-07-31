@@ -1,11 +1,15 @@
 package ba.minecraft.uniquecommands.common.core.helper;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.ForgeEventFactory;
@@ -41,12 +45,12 @@ public class TeleportationHelper {
 			// Indicate that teleportation was not performed.
 			return false;
 		}
-		
+
 		// Take coordinates from event, just in case that event handler has modified them.
         x = event.getTargetX();
         y = event.getTargetY();
         z = event.getTargetZ();
-        
+
         // Get block position on specified coordinates.
         BlockPos blockPos = BlockPos.containing(x, y, z);
 		
@@ -64,13 +68,18 @@ public class TeleportationHelper {
         // Round yaw and pitch.
         yaw = Mth.wrapDegrees(yaw);
         pitch = Mth.wrapDegrees(pitch);
-        
-        // IF: Teleportation was not successful.
-        if(!entity.teleportTo(level, x, y, z, null, yaw, pitch)) {
-        	
-        	// Indicate it wasn't.
-        	return false;
-        }
+		
+		// This is not aligned how it works with other teleportation commands.
+		// However it probably does not make much of a difference.
+		Set<RelativeMovement> movements = EnumSet.noneOf(RelativeMovement.class);
+
+		// Teleport entity.
+		boolean isTeleported = entity.teleportTo(level, x, y, z, movements , yaw, pitch);
+		
+		// IF: Entity was not teleported.
+		if(!isTeleported) {
+			return false;
+		}
 
         // IF: Entity is not living entity or it is not still falling.
         if (!(entity instanceof LivingEntity livingentity) || !livingentity.isFallFlying()) {
@@ -88,7 +97,7 @@ public class TeleportationHelper {
         	// Prevent further movement.
             pathfindermob.getNavigation().stop();
         }
-        
+
         return true;
 	}
 
