@@ -53,51 +53,8 @@ public final class GravebackCommand {
 		
 		LocationData deathLocation = PlayerManager.loadDeathData(player);
 		
-		// IF: Data location was found.
-		if(deathLocation != null) {
-			
-			// Get coordinates from data row.
-			int posX = deathLocation.getX();
-			int posY = deathLocation.getY();
-			int posZ = deathLocation.getZ();
-			
-			// Get dimension resource identifier.
-			String dimResId = deathLocation.getDimensionResId();
-			
-			// Get reference to Minecraft server
-			MinecraftServer server = player.getServer();
-			
-			// Convert dimension resource Id to Level.
-			ServerLevel serverLevel = LocationHelper.getLevel(server, dimResId);
-
-			// Teleport player.
-			boolean isTeleported = TeleportationHelper.teleportCommand(serverLevel, player, posX, posY, posZ);
-			
-			// IF: Teleportation was not successful.
-			if(!isTeleported) {
-				
-				// Create error message.
-				MutableComponent message = Component.literal(
-					"Teleportation to place of your demise has failed. :("
-				);
-					
-				// Send error message.
-				source.sendFailure(message);
-				
-				return -1;
-			}
-			
-			// Create message to be displayed in console.		
-			MutableComponent message = Component.literal(
-				"You have been returned to place of your death: " + posX + " " + posY + " " + posZ + ""
-			);
-
-			// Send message to console.
-			source.sendSuccess(() -> message, true);
-			
-			return 1;
-			
-		} else {
+		// IF: Death location was not determined.
+		if(deathLocation == null) {
 			
 			// Create error message.
 			MutableComponent message = Component.literal(
@@ -110,6 +67,46 @@ public final class GravebackCommand {
 			return -1;
 		}
 		
+		// Get coordinates from data row.
+		int posX = deathLocation.getX();
+		int posY = deathLocation.getY();
+		int posZ = deathLocation.getZ();
+		
+		// Get dimension resource identifier.
+		String dimResId = deathLocation.getDimensionResId();
+		
+		// Get reference to Minecraft server
+		MinecraftServer server = player.getServer();
+		
+		// Convert dimension resource Id to Level.
+		ServerLevel serverLevel = LocationHelper.getLevel(server, dimResId);
+
+		// Teleport player.
+		boolean isTeleported = TeleportationHelper.teleportCommand(serverLevel, player, posX, posY, posZ);
+		
+		// IF: Teleportation was not successful.
+		if(!isTeleported) {
+			
+			// Create error message.
+			MutableComponent message = Component.literal(
+				"Teleportation to place of your demise has failed. :("
+			);
+				
+			// Send error message.
+			source.sendFailure(message);
+			
+			return -1;
+		}
+		
+		// Create message to be displayed in console.		
+		MutableComponent message = Component.literal(
+			"You have been returned to place of your death: " + posX + " " + posY + " " + posZ + ""
+		);
+
+		// Send message to console.
+		source.sendSuccess(() -> message, true);
+		
+		return 1;
 	
 	}
 	

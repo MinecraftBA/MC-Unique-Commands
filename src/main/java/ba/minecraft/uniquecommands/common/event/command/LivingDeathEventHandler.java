@@ -16,22 +16,29 @@ public final class LivingDeathEventHandler {
 	@SubscribeEvent()
 	public static void onLivingDeath(final LivingDeathEvent event) {
 		
+		// Get reference to entity that has died.
 		LivingEntity entity = event.getEntity();
 		
+		// Get reference to level where entity has died.
 		Level level = entity.level();
 		
+		// IF: Code is executing on client side.
 		if(level.isClientSide()) {
 			
+			// Do nothing.
 			return;
 		}
-		
+		// IF: Entity is not player.
 		if(!(entity instanceof ServerPlayer)) {
 			
+			// Do nothing.
 			return;
 		}
-		
+
+		// Cast entity to player.
 		ServerPlayer player = (ServerPlayer)entity;
 		
+		// Save death information.
 		PlayerManager.saveDeathData(player);
 	}
 	
