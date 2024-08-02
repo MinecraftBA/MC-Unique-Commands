@@ -60,14 +60,19 @@ public class TpDownCommand {
 		// Iterate through all blocks from player's current position to world bottom.
 		for(int i=y-3; i > -64; i--) {
 			
-			// Teleport player to location.
-			boolean isTeleported = TeleportationHelper.teleportCommand(level, player, x, i, z);
+			// IF: Teleportation is safe.
+			if (TeleportationHelper.isSafe(level, x, i, z)) {
+				
+				// Teleport player to location.
+				boolean isTeleported = TeleportationHelper.teleportCommand(level, player, x, i, z);
 
-			// IF: Teleportation was successful.
-			if (isTeleported) {
+				// IF: Teleportation was successful.
+				if (isTeleported) {
 
-				// Indicate success.
-				return 1;
+					// Indicate success.
+					return 1;
+				}
+				
 			}
   			
 		}

@@ -61,14 +61,19 @@ public class TpBottomCommand {
 		// Iterate from the world buttom until next free space below player.
 		for(int i= -64; i < y-3; i++) {
 
-			// Teleport player to location.
-			boolean isTeleported = TeleportationHelper.teleportCommand(level, player, x, i, z);
+			// IF: Teleportation is safe.
+			if (TeleportationHelper.isSafe(level, x, i, z)) {
+				
+				// Teleport player to location.
+				boolean isTeleported = TeleportationHelper.teleportCommand(level, player, x, i, z);
 
-			// IF: Teleportation was successful.
-			if (isTeleported) {
+				// IF: Teleportation was successful.
+				if (isTeleported) {
 
-				// Indicate success.
-				return 1;
+					// Indicate success.
+					return 1;
+				}
+				
 			}
   			
 		}
