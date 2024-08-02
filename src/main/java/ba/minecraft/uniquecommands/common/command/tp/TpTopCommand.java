@@ -58,16 +58,21 @@ public class TpTopCommand {
 		int z = playerPos.getZ();
 
 		// Iterate from the top of the world until next location above player.
-		for(int i= 320; i > y+3; i--) {
-			
-			// Teleport player to location.
-			boolean isTeleported = TeleportationHelper.teleportCommand(level, player, x, i, z);
+		for(int i = 320; i > y+3; i--) {
 
-			// IF: Teleportation was successful.
-			if (isTeleported) {
+			// IF: Teleportation is safe.
+			if (TeleportationHelper.isSafe(level, x, i, z)) {
+				
+				// Teleport player to location.
+				boolean isTeleported = TeleportationHelper.teleportCommand(level, player, x, i, z);
 
-				// Indicate success.
-				return 1;
+				// IF: Teleportation was successful.
+				if (isTeleported) {
+
+					// Indicate success.
+					return 1;
+				}
+				
 			}
   			
 		}

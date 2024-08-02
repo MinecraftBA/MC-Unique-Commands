@@ -16,7 +16,7 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.EntityTeleportEvent.TeleportCommand;
 
 public class TeleportationHelper {
-	
+
 	public static boolean isSafe(ServerLevel level, BlockPos pos) {
 		
 		// Create coordinates for blocks above and below.
@@ -33,7 +33,14 @@ public class TeleportationHelper {
 		
 		return isSafe;
 	}
-	
+
+	public static boolean isSafe(ServerLevel level, double x, double y, double z) {
+		
+		BlockPos blockPos = BlockPos.containing(x, y, z);
+		
+		return isSafe(level, blockPos);
+	}
+
 	public static boolean teleportCommand(ServerLevel level, Entity entity, double x, double y, double z) {
         
 		// Generate teleportation event via FORGE bus.
